@@ -41,6 +41,11 @@
 *.su
 *.idb
 *.pdb
+**/**/**/Broadcast/*.*
+!**/**/**/Broadcast/*.hex
+**/**/**/DebugConfig/
+*.uvoptx
+*.duwon
 
 # Kernel Module Compile Results
 *.mod*
