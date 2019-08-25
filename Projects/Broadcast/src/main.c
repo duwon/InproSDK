@@ -5,6 +5,7 @@
 #include "timeServer.h"
 #include "low_power_manager.h"
 #include "vcom.h"
+#include "controlMessage.h"
 
 #define RF_FREQUENCY                                920000000 // Hz
 #define TX_OUTPUT_POWER                             14        // dBm
@@ -28,8 +29,8 @@ typedef enum
     RX_DONE
 }States_t;
 
-#define RX_TIMEOUT_VALUE                            1000
-#define BUFFER_SIZE                                 64          // Define the payload size here
+#define RX_TIMEOUT_VALUE                            3000
+#define BUFFER_SIZE                                 32          // Define the payload size here
 
 uint8_t BufferSize = BUFFER_SIZE;
 uint8_t Buffer[BUFFER_SIZE];
@@ -58,8 +59,6 @@ static void TimeServerInit(void);
 
 int main( void )
 {
-    bool isMaster = true;
-	
     HAL_Init( );
     SystemClock_Config( );
 
@@ -91,28 +90,33 @@ int main( void )
                                    0, true, 0, 0, LORA_IQ_INVERSION_ON, true );
 
 
-    //Radio.Rx( RX_TIMEOUT_VALUE );
+    Radio.Rx( RX_TIMEOUT_VALUE );
 
     while( 1 )
     {
         switch( State )
         {
         case RX_DONE:
+            Radio.Rx( RX_TIMEOUT_VALUE );
+
             LED_Toggle( LED1 ) ;
-            PRINTF("%d\r\n",BufferRx[0]);
+            PRINTF("%s\r\n",BufferRx);
             State = LOWPOWER;
             break;
         case TX_DONE:
-            LED_Toggle( LED2 ) ;
             Radio.Rx( RX_TIMEOUT_VALUE );
+            
+            LED_Toggle( LED2 ) ;
             State = LOWPOWER;
             break;
         case RX_TIMEOUT:
         case RX_ERROR:
+            Radio.Rx( RX_TIMEOUT_VALUE );
+
             State = LOWPOWER;
             break;
         case TX_TIMEOUT:
-            //Radio.Rx( RX_TIMEOUT_VALUE );
+
             State = LOWPOWER;
             break;
         case LOWPOWER:
@@ -126,9 +130,13 @@ int main( void )
         if (State == LOWPOWER) /* if an interupt has occured after __disable_irq, it is kept pending and cortex will not enter low power anyway */
         {
             #ifndef LOW_POWER_DISABLE
-                //LPM_EnterLowPower( );
+                LPM_EnterLowPower( );
             #endif
         }
+        else
+        {
+        }
+        
         ENABLE_IRQ( );
     }
 }
@@ -145,6 +153,7 @@ void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
     Radio.Sleep( );
     BufferSize = size;
     memcpy( BufferRx, payload, BufferSize );
+    putMessageBuffer(payload, size);
     RssiValue = rssi;
     SnrValue = snr;
     State = RX_DONE;
@@ -188,7 +197,7 @@ static void OnTxEvent( void* context )
   Buffer[0] = cntTx;
   for(int i = 1; i<BUFFER_SIZE; i++)
   {
-      Buffer[i] = i;
+      Buffer[i] = i + '1';
   }
   Radio.Send( Buffer, BufferSize );
 

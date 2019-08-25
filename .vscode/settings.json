@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "hw.h": "c",
+        "hw_conf.h": "c",
+        "controlmessage.h": "c"
+    }
+}
