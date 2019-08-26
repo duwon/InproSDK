@@ -113,6 +113,7 @@ void HW_Init( void )
     
     BSP_LED_Init( LED1 );
     BSP_LED_Init( LED2 );
+    BSP_PB_Init(BUTTON_KEY,BUTTON_MODE_GPIO);
 
     McuInitialized = true;
   }

@@ -3,6 +3,7 @@
         "hw.h": "c",
         "hw_conf.h": "c",
         "controlmessage.h": "c",
-        "b-l072z-lrwan1.h": "c"
+        "b-l072z-lrwan1.h": "c",
+        "loramessage.h": "c"
     }
 }

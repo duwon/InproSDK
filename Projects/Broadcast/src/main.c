@@ -29,7 +29,7 @@ typedef enum
     RX_DONE
 }States_t;
 
-#define RX_TIMEOUT_VALUE                            3000
+#define RX_TIMEOUT_VALUE                            5000
 #define BUFFER_SIZE                                 32          // Define the payload size here
 
 uint8_t BufferSize = BUFFER_SIZE;
@@ -66,6 +66,8 @@ int main( void )
 
     LPM_SetOffMode(LPM_APPLI_Id , LPM_Disable ); /*Disbale Stand-by mode*/
 
+    initMessage();
+
     RadioInit();
     Radio.Rx( RX_TIMEOUT_VALUE );
 
@@ -73,6 +75,11 @@ int main( void )
     {
         procLoraStage();
         //parseMessage();        /* call message parsing function */
+        uint8_t tempRxBuffer[10] = {0,};
+        if(getMessagePayload(tempRxBuffer) == SUCCESS)
+        {
+            PRINTF("ID:%d CNT:%d\r\n",tempRxBuffer[0], tempRxBuffer[1]);
+        }
 
         DISABLE_IRQ( );
         if (State == LOWPOWER) /* if an interupt has occured after __disable_irq, it is kept pending and cortex will not enter low power anyway */
@@ -98,10 +105,10 @@ void OnTxDone( void )
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
     Radio.Sleep( );
-    putMessageBuffer(&rxMessageBuffer, payload, size);
+    uint8_t errorCode = putMessageBuffer(&rxMessageBuffer, payload, size);
+    if( errorCode != 0)
+        PRINTF("error code \r\n", errorCode);
     
-    RssiValue = rssi;
-    SnrValue = snr;
     State = RX_DONE;
 
     PRINTF("OnRxDone\n\r");
@@ -164,9 +171,17 @@ static void OnledEvent( void* context )
 static void OnTxEvent( void* context )
 {
   static uint8_t cntTx = 0;
-  uint8_t tempBuffer[5] = {0,};
-  tempBuffer[0] = cntTx++;
-  sendMessage(tempBuffer,1);
+  //uint8_t tempBuffer[5] = {0,};
+  
+  if(cntTx++ == 150)   cntTx = 0;
+  Buffer[1] = cntTx++;
+
+  if(BSP_PB_GetState(BUTTON_USER)==GPIO_PIN_RESET)
+  {
+		Buffer[0] += 1;
+    PRINTF("key pressed. ID:%d \r\n",Buffer[0]);
+  }
+  sendMessage(Buffer,2);
 
   //LED_Toggle( LED2 ) ;
 

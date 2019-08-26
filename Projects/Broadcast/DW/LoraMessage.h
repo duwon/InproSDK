@@ -46,8 +46,9 @@ extern messageFIFO_TypeDef rxMessageBuffer;;
 
 
 
-
+void initMessage(void);
 ErrorStatus getMessagePayload(uint8_t *data);
+void sendMessage(uint8_t *txData, uint8_t dataLength);
 ErrorStatus putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size);
 ErrorStatus getMessageBuffer(volatile messageFIFO_TypeDef *buffer, messagePacket_TypeDef *data);
 

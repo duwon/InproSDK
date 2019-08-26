@@ -2,6 +2,7 @@
 #include <string.h>
 #include "LoraMessage.h"
 #include "radio.h"
+#include "util_console.h"
 
 messagePacket_TypeDef txMessage;
 messageFIFO_TypeDef rxMessageBuffer;
@@ -49,6 +50,9 @@ void sendMessage(uint8_t *txData, uint8_t dataLength)
     txMessageBuff[txMessageSize-1] = MESSAGE_ETX;
 
     Radio.Send( txMessageBuff, txMessageSize);
+    for(int i=0; i<txMessageSize; i++)
+        PRINTF("%x ", txMessageBuff[i]);
+    PRINTF("\r\n");
 }
 
 void initMessage(void)
@@ -60,33 +64,49 @@ void initMessage(void)
     txMessage.payloadSize = MESSAGE_MAX_PAYLOAD_SIZE;
 }   
 
-ErrorStatus putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size)
+uint8_t putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size)
 {
-    memcpy((void *)&buffer->buff[buffer->in++], data, sizeof(buffer->buff));          /* 버퍼에 저장 */
-    buffer->buff->checksum = data[size-2];
+    memcpy((void *)&buffer->buff[buffer->in], data, size);          /* 버퍼에 저장 */
+    buffer->buff[buffer->in].checksum = data[size-2];
 
+    PRINTF("buffer count : %d, data %d, %d \r\n",buffer->count,buffer->buff[buffer->in].payload[0], buffer->buff[buffer->in].payload[1]);
+    for(int i=0; i<size; i++)
+        PRINTF("%x ", data[i]);
+    PRINTF("      %d byte\r\n",size);
+
+    uint8_t error_code;
     if (buffer->count == MESSAGE_BUFFER_SIZE) /* 데이터가 버퍼에 가득 찼으면 ERROR 리턴 */
     {
-        return ERROR;
+        //PRINTF("buffer full \r\n");
+        error_code = 0x01;
+        return error_code;
     }
     else if (size > (MESSAGE_HEADER_SIZE + MESSAGE_MAX_PAYLOAD_SIZE))
     {
-        return ERROR;
+        //PRINTF("payload oversize \r\n");
+        error_code = 0x02;
+        return error_code;
     }
-    else if (size != (buffer->buff->payloadSize - MESSAGE_HEADER_SIZE))
+    else if (size != (buffer->buff[buffer->in].payloadSize + MESSAGE_HEADER_SIZE))
     {
-        return ERROR;
+        //PRINTF("different size\r\n");
+        error_code = 0x03;
+        return error_code;
     }
-    else if (buffer->buff->checksum != calChecksum(data,size))
+    else if (buffer->buff[buffer->in].checksum != calChecksum(data,size))
     {
-        return ERROR;
+        //PRINTF("calChecksum \r\n");
+        error_code = 0x04;
+        return error_code;
     }
-    else if (buffer->buff->stx != 0xA5A5)
+    else if (buffer->buff[buffer->in].stx != 0xA5A5)
     {
-        return ERROR;
+        //PRINTF("not stx");
+        error_code = 0x05;
+        return error_code;
     }
 
-
+    buffer->in++;
     buffer->count++;                                /* 버퍼에 저장된 갯수 1 증가 */
     if(buffer->in == MESSAGE_BUFFER_SIZE)           /* 시작 인덱스가 버퍼의 끝이면 */
     {
@@ -95,8 +115,8 @@ ErrorStatus putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data
     else
     {
     }
-    
-    return SUCCESS;
+    return 0;
+
 }
 
 ErrorStatus getMessageBuffer(volatile messageFIFO_TypeDef *buffer, messagePacket_TypeDef *data)
