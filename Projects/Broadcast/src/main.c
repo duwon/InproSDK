@@ -5,7 +5,7 @@
 #include "timeServer.h"
 #include "low_power_manager.h"
 #include "vcom.h"
-#include "controlMessage.h"
+#include "LoraMessage.h"
 
 #define RF_FREQUENCY                                920000000 // Hz
 #define TX_OUTPUT_POWER                             14        // dBm
@@ -38,10 +38,6 @@ uint8_t BufferRx[BUFFER_SIZE];
 
 States_t State = LOWPOWER;
 
-int8_t RssiValue = 0;
-int8_t SnrValue = 0;
-
-
 static  TimerEvent_t timerLed; /* Led Timers objects */
 static  TimerEvent_t timerTx; /* Tx Timers objects */
 
@@ -53,9 +49,11 @@ void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr ); /* b
 void OnTxTimeout( void ); /* brief Function executed on Radio Tx Timeout event */
 void OnRxTimeout( void ); /* brief Function executed on Radio Rx Timeout event */
 void OnRxError( void ); /* brief Function executed on Radio Rx Error event */
+static void RadioInit(void);
 static void OnledEvent( void* context ); /* brief Function executed on when led timer elapses */
 static void OnTxEvent( void* context );
 static void TimeServerInit(void);
+static void procLoraStage(void);
 
 int main( void )
 {
@@ -68,65 +66,15 @@ int main( void )
 
     LPM_SetOffMode(LPM_APPLI_Id , LPM_Disable ); /*Disbale Stand-by mode*/
 
-    // Radio initialization
-    RadioEvents.TxDone = OnTxDone;
-    RadioEvents.RxDone = OnRxDone;
-    RadioEvents.TxTimeout = OnTxTimeout;
-    RadioEvents.RxTimeout = OnRxTimeout;
-    RadioEvents.RxError = OnRxError;
-
-    Radio.Init( &RadioEvents );
-
-    Radio.SetChannel( RF_FREQUENCY );
-
-    Radio.SetTxConfig( MODEM_LORA, TX_OUTPUT_POWER, 0, LORA_BANDWIDTH,
-                                   LORA_SPREADING_FACTOR, LORA_CODINGRATE,
-                                   LORA_PREAMBLE_LENGTH, LORA_FIX_LENGTH_PAYLOAD_ON,
-                                   true, 0, 0, LORA_IQ_INVERSION_ON, 3000 );
-
-    Radio.SetRxConfig( MODEM_LORA, LORA_BANDWIDTH, LORA_SPREADING_FACTOR,
-                                   LORA_CODINGRATE, 0, LORA_PREAMBLE_LENGTH,
-                                   LORA_SYMBOL_TIMEOUT, LORA_FIX_LENGTH_PAYLOAD_ON,
-                                   0, true, 0, 0, LORA_IQ_INVERSION_ON, true );
-
-
+    RadioInit();
     Radio.Rx( RX_TIMEOUT_VALUE );
 
     while( 1 )
     {
-        switch( State )
-        {
-        case RX_DONE:
-            Radio.Rx( RX_TIMEOUT_VALUE );
-
-            LED_Toggle( LED1 ) ;
-            PRINTF("%s\r\n",BufferRx);
-            State = LOWPOWER;
-            break;
-        case TX_DONE:
-            Radio.Rx( RX_TIMEOUT_VALUE );
-            
-            LED_Toggle( LED2 ) ;
-            State = LOWPOWER;
-            break;
-        case RX_TIMEOUT:
-        case RX_ERROR:
-            Radio.Rx( RX_TIMEOUT_VALUE );
-
-            State = LOWPOWER;
-            break;
-        case TX_TIMEOUT:
-
-            State = LOWPOWER;
-            break;
-        case LOWPOWER:
-        default:
-            // Set low power
-            break;
-        }
+        procLoraStage();
+        //parseMessage();        /* call message parsing function */
 
         DISABLE_IRQ( );
-        
         if (State == LOWPOWER) /* if an interupt has occured after __disable_irq, it is kept pending and cortex will not enter low power anyway */
         {
             #ifndef LOW_POWER_DISABLE
@@ -136,7 +84,6 @@ int main( void )
         else
         {
         }
-        
         ENABLE_IRQ( );
     }
 }
@@ -151,9 +98,8 @@ void OnTxDone( void )
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
     Radio.Sleep( );
-    BufferSize = size;
-    memcpy( BufferRx, payload, BufferSize );
-    putMessageBuffer(payload, size);
+    putMessageBuffer(&rxMessageBuffer, payload, size);
+    
     RssiValue = rssi;
     SnrValue = snr;
     State = RX_DONE;
@@ -184,6 +130,30 @@ void OnRxError( void )
     PRINTF("OnRxError\n\r");
 }
 
+static void RadioInit(void)
+{
+    // Radio initialization
+    RadioEvents.TxDone = OnTxDone;
+    RadioEvents.RxDone = OnRxDone;
+    RadioEvents.TxTimeout = OnTxTimeout;
+    RadioEvents.RxTimeout = OnRxTimeout;
+    RadioEvents.RxError = OnRxError;
+
+    Radio.Init(&RadioEvents);
+
+    Radio.SetChannel(RF_FREQUENCY);
+
+    Radio.SetTxConfig(MODEM_LORA, TX_OUTPUT_POWER, 0, LORA_BANDWIDTH,
+                      LORA_SPREADING_FACTOR, LORA_CODINGRATE,
+                      LORA_PREAMBLE_LENGTH, LORA_FIX_LENGTH_PAYLOAD_ON,
+                      true, 0, 0, LORA_IQ_INVERSION_ON, 3000);
+
+    Radio.SetRxConfig(MODEM_LORA, LORA_BANDWIDTH, LORA_SPREADING_FACTOR,
+                      LORA_CODINGRATE, 0, LORA_PREAMBLE_LENGTH,
+                      LORA_SYMBOL_TIMEOUT, LORA_FIX_LENGTH_PAYLOAD_ON,
+                      0, true, 0, 0, LORA_IQ_INVERSION_ON, true);
+}
+
 static void OnledEvent( void* context )
 {
   //LED_Toggle( LED1 ) ; 
@@ -194,12 +164,9 @@ static void OnledEvent( void* context )
 static void OnTxEvent( void* context )
 {
   static uint8_t cntTx = 0;
-  Buffer[0] = cntTx;
-  for(int i = 1; i<BUFFER_SIZE; i++)
-  {
-      Buffer[i] = i + '1';
-  }
-  Radio.Send( Buffer, BufferSize );
+  uint8_t tempBuffer[5] = {0,};
+  tempBuffer[0] = cntTx++;
+  sendMessage(tempBuffer,1);
 
   //LED_Toggle( LED2 ) ;
 
@@ -222,3 +189,36 @@ static void TimeServerInit(void)
     TimerStart(&timerTx );
 }
 
+static void procLoraStage(void)
+{
+    switch (State)
+    {
+    case RX_DONE:
+        Radio.Rx(RX_TIMEOUT_VALUE);
+
+        LED_Toggle(LED1);
+        PRINTF("%s\r\n", BufferRx);
+        State = LOWPOWER;
+        break;
+    case TX_DONE:
+        Radio.Rx(RX_TIMEOUT_VALUE);
+
+        LED_Toggle(LED2);
+        State = LOWPOWER;
+        break;
+    case RX_TIMEOUT:
+    case RX_ERROR:
+        Radio.Rx(RX_TIMEOUT_VALUE);
+
+        State = LOWPOWER;
+        break;
+    case TX_TIMEOUT:
+
+        State = LOWPOWER;
+        break;
+    case LOWPOWER:
+    default:
+        // Set low power
+        break;
+    }
+}

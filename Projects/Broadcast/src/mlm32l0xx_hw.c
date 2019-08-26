@@ -113,8 +113,6 @@ void HW_Init( void )
     
     BSP_LED_Init( LED1 );
     BSP_LED_Init( LED2 );
-    BSP_LED_Init( LED3 );
-    BSP_LED_Init( LED4 );
 
     McuInitialized = true;
   }
