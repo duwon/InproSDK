@@ -609,6 +609,11 @@
               <FileType>1</FileType>
               <FilePath>..\DW\LoraMessage.c</FilePath>
             </File>
+            <File>
+              <FileName>PayloadMessage.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DW\PayloadMessage.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

@@ -6,6 +6,7 @@
 #include "low_power_manager.h"
 #include "vcom.h"
 #include "LoraMessage.h"
+#include "PayloadMessage.h"
 
 #define RF_FREQUENCY                                920000000 // Hz
 #define TX_OUTPUT_POWER                             14        // dBm
@@ -30,16 +31,16 @@ typedef enum
 }States_t;
 
 #define RX_TIMEOUT_VALUE                            5000
-#define BUFFER_SIZE                                 32          // Define the payload size here
+#define TX_INTERVAL_TIME                            10000
+#define BOOTING_TIME                                5000
 
-uint8_t BufferSize = BUFFER_SIZE;
-uint8_t Buffer[BUFFER_SIZE];
-uint8_t BufferRx[BUFFER_SIZE];
+bool existID = false;
 
 States_t State = LOWPOWER;
 
 static  TimerEvent_t timerLed; /* Led Timers objects */
 static  TimerEvent_t timerTx; /* Tx Timers objects */
+static  TimerEvent_t timerBooring;
 
 /* Private function prototypes -----------------------------------------------*/
 static RadioEvents_t RadioEvents; /* Radio events function pointer */
@@ -52,6 +53,7 @@ void OnRxError( void ); /* brief Function executed on Radio Rx Error event */
 static void RadioInit(void);
 static void OnledEvent( void* context ); /* brief Function executed on when led timer elapses */
 static void OnTxEvent( void* context );
+static void OnBootingEvent( void* context );
 static void TimeServerInit(void);
 static void procLoraStage(void);
 
@@ -71,16 +73,25 @@ int main( void )
     RadioInit();
     Radio.Rx( RX_TIMEOUT_VALUE );
 
+    //uint32_t UID = *(__IO uint32_t *)UID_BASE;
+    PRINTF("UID : %x\r\n", UID);
+
     while( 1 )
     {
-        procLoraStage();
-        //parseMessage();        /* call message parsing function */
-        uint8_t tempRxBuffer[10] = {0,};
-        if(getMessagePayload(tempRxBuffer) == SUCCESS)
+        if(!existID)
         {
-            PRINTF("ID:%d CNT:%d\r\n",tempRxBuffer[0], tempRxBuffer[1]);
+
         }
 
+        procLoraStage();
+
+#if 1        
+        uint8_t tempRxBuffer[MESSAGE_MAX_PAYLOAD_SIZE] = {0,};
+        if(getMessagePayload(tempRxBuffer) == SUCCESS)
+        {
+            PRINTF("ID : %d CNT : %d\r\n",tempRxBuffer[0], tempRxBuffer[1]);
+        }
+#endif
         DISABLE_IRQ( );
         if (State == LOWPOWER) /* if an interupt has occured after __disable_irq, it is kept pending and cortex will not enter low power anyway */
         {
@@ -99,7 +110,7 @@ void OnTxDone( void )
 {
     Radio.Sleep( );
     State = TX_DONE;
-    PRINTF("OnTxDone\n\r");
+    PRINTF("                                               OnTxDone\n\r");
 }
 
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
@@ -107,11 +118,11 @@ void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
     Radio.Sleep( );
     uint8_t errorCode = putMessageBuffer(&rxMessageBuffer, payload, size);
     if( errorCode != 0)
-        PRINTF("error code \r\n", errorCode);
+        PRINTF("error code %d\r\n", errorCode);
     
     State = RX_DONE;
 
-    PRINTF("OnRxDone\n\r");
+    //PRINTF("OnRxDone\n\r");
     PRINTF("RssiValue=%d dBm, SnrValue=%d\n\r", rssi, snr);
 }
 
@@ -171,21 +182,29 @@ static void OnledEvent( void* context )
 static void OnTxEvent( void* context )
 {
   static uint8_t cntTx = 0;
-  //uint8_t tempBuffer[5] = {0,};
+  uint8_t tempBuffer[5] = {0,};
   
   if(cntTx++ == 150)   cntTx = 0;
-  Buffer[1] = cntTx++;
+  tempBuffer[1] = cntTx;
 
   if(BSP_PB_GetState(BUTTON_USER)==GPIO_PIN_RESET)
   {
-		Buffer[0] += 1;
-    PRINTF("key pressed. ID:%d \r\n",Buffer[0]);
+    srcID += 1;
+    tempBuffer[0] = srcID;
+    PRINTF("key pressed. ID:%d \r\n",tempBuffer[0]);
   }
-  sendMessage(Buffer,2);
+  sendMessage(tempBuffer,2);
 
   //LED_Toggle( LED2 ) ;
 
   TimerStart(&timerTx );
+}
+
+static void OnBootingEvent( void* context )
+{
+    sendPayloadData(MTYPE_GETID,(void *)&UID);
+
+    TimerStart(&timerBooring );
 }
 
 static void TimeServerInit(void)
@@ -193,15 +212,18 @@ static void TimeServerInit(void)
     /* Led Timers */
     TimerInit(&timerLed, OnledEvent);   
     TimerSetValue( &timerLed, 1000);
-
     TimerStart(&timerLed );
 
 
     /* Tx Timers */
     TimerInit(&timerTx, OnTxEvent);   
-    TimerSetValue( &timerTx, 5000);
-
+    TimerSetValue( &timerTx, TX_INTERVAL_TIME);
     TimerStart(&timerTx );
+
+    
+    TimerInit(&timerBooring, OnBootingEvent);   
+    TimerSetValue( &timerBooring, 5500);
+    TimerStart(&timerBooring );
 }
 
 static void procLoraStage(void)
@@ -212,7 +234,6 @@ static void procLoraStage(void)
         Radio.Rx(RX_TIMEOUT_VALUE);
 
         LED_Toggle(LED1);
-        PRINTF("%s\r\n", BufferRx);
         State = LOWPOWER;
         break;
     case TX_DONE:
