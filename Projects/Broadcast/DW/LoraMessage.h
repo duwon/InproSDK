@@ -7,7 +7,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l0xx_hal.h"
-	
+#include <stdbool.h>
     
     
 #define MESSAGE_BUFFER_SIZE         10          /* 메시지 버퍼 크기 */
@@ -41,17 +41,16 @@ typedef struct {
 
 
 
-
+extern bool isMasterMode;
 extern messageFIFO_TypeDef rxMessageBuffer;;
 extern uint8_t srcID;
-
+extern uint8_t destID;
 
 void initMessage(void);
-ErrorStatus getMessagePayload(uint8_t *data);
+ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *rxData);
 void sendMessage(uint8_t *txData, uint8_t dataLength);
 ErrorStatus putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size);
 ErrorStatus getMessageBuffer(volatile messageFIFO_TypeDef *buffer, messagePacket_TypeDef *data);
-
 
 
 

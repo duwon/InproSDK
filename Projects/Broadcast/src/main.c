@@ -32,15 +32,11 @@ typedef enum
 
 #define RX_TIMEOUT_VALUE                            5000
 #define TX_INTERVAL_TIME                            10000
-#define BOOTING_TIME                                5000
-
-bool existID = false;
 
 States_t State = LOWPOWER;
 
 static  TimerEvent_t timerLed; /* Led Timers objects */
 static  TimerEvent_t timerTx; /* Tx Timers objects */
-static  TimerEvent_t timerBooring;
 
 /* Private function prototypes -----------------------------------------------*/
 static RadioEvents_t RadioEvents; /* Radio events function pointer */
@@ -53,8 +49,7 @@ void OnRxError( void ); /* brief Function executed on Radio Rx Error event */
 static void RadioInit(void);
 static void OnledEvent( void* context ); /* brief Function executed on when led timer elapses */
 static void OnTxEvent( void* context );
-static void OnBootingEvent( void* context );
-static void TimeServerInit(void);
+static void mainTimerInit(void);
 static void procLoraStage(void);
 
 int main( void )
@@ -64,7 +59,8 @@ int main( void )
 
     DBG_Init( );
     HW_Init( );  
-    TimeServerInit( );
+    mainTimerInit( );
+    pyaloadTimerInit();
 
     LPM_SetOffMode(LPM_APPLI_Id , LPM_Disable ); /*Disbale Stand-by mode*/
 
@@ -73,23 +69,23 @@ int main( void )
     RadioInit();
     Radio.Rx( RX_TIMEOUT_VALUE );
 
-    //uint32_t UID = *(__IO uint32_t *)UID_BASE;
+    
     PRINTF("UID : %x\r\n", UID);
-
+    //InsertIDList(UID);
     while( 1 )
     {
-        if(!existID)
-        {
-
-        }
-
         procLoraStage();
+        procPayloadData();
 
-#if 1        
+#if 1    //Message Test   
+		uint8_t tempSrcID;
         uint8_t tempRxBuffer[MESSAGE_MAX_PAYLOAD_SIZE] = {0,};
-        if(getMessagePayload(tempRxBuffer) == SUCCESS)
+        if(getMessagePayload((void*)&tempSrcID, tempRxBuffer) == SUCCESS)
         {
-            PRINTF("ID : %d CNT : %d\r\n",tempRxBuffer[0], tempRxBuffer[1]);
+            if(tempRxBuffer[0] == MTYPE_TESTMESSAGE)
+            {
+                PRINTF("ID : %d CNT : %d\r\n",tempRxBuffer[1], tempRxBuffer[2]);
+            }
         }
 #endif
         DISABLE_IRQ( );
@@ -123,7 +119,7 @@ void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
     State = RX_DONE;
 
     //PRINTF("OnRxDone\n\r");
-    PRINTF("RssiValue=%d dBm, SnrValue=%d\n\r", rssi, snr);
+    //PRINTF("RssiValue=%d dBm, SnrValue=%d\n\r", rssi, snr);
 }
 
 void OnTxTimeout( void )
@@ -182,32 +178,27 @@ static void OnledEvent( void* context )
 static void OnTxEvent( void* context )
 {
   static uint8_t cntTx = 0;
-  uint8_t tempBuffer[5] = {0,};
+  uint8_t tempBuffer[5] = {MTYPE_TESTMESSAGE, srcID, 0};
   
   if(cntTx++ == 150)   cntTx = 0;
-  tempBuffer[1] = cntTx;
+  tempBuffer[2] = cntTx;
 
   if(BSP_PB_GetState(BUTTON_USER)==GPIO_PIN_RESET)
   {
-    srcID += 1;
-    tempBuffer[0] = srcID;
-    PRINTF("key pressed. ID:%d \r\n",tempBuffer[0]);
+    srcID = MASTER_ID;
+    isMasterMode = true;
+    tempBuffer[1] = srcID;
+    PRINTF("key pressed. ID:%d \r\n",srcID);
+    payloadTimerDeInit();
   }
-  sendMessage(tempBuffer,2);
+  sendMessage(tempBuffer,3);
 
   //LED_Toggle( LED2 ) ;
 
   TimerStart(&timerTx );
 }
 
-static void OnBootingEvent( void* context )
-{
-    sendPayloadData(MTYPE_GETID,(void *)&UID);
-
-    TimerStart(&timerBooring );
-}
-
-static void TimeServerInit(void)
+static void mainTimerInit(void)
 {
     /* Led Timers */
     TimerInit(&timerLed, OnledEvent);   
@@ -219,11 +210,6 @@ static void TimeServerInit(void)
     TimerInit(&timerTx, OnTxEvent);   
     TimerSetValue( &timerTx, TX_INTERVAL_TIME);
     TimerStart(&timerTx );
-
-    
-    TimerInit(&timerBooring, OnBootingEvent);   
-    TimerSetValue( &timerBooring, 5500);
-    TimerStart(&timerBooring );
 }
 
 static void procLoraStage(void)

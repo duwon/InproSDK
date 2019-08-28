@@ -9,17 +9,18 @@ messageFIFO_TypeDef rxMessageBuffer;
 
 uint8_t destID = MASTER_ID;
 uint8_t srcID = 0;
-bool masterMode = true;
+bool isMasterMode = false;
 
 static uint8_t calChecksum(uint8_t *messageData, uint8_t messageSize);
 
-ErrorStatus getMessagePayload(uint8_t *rxData)
+ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *rxData)
 {
     messagePacket_TypeDef rxMessage;
 
     if (getMessageBuffer(&rxMessageBuffer, &rxMessage) == SUCCESS)
     {
         memcpy(rxData, rxMessage.payload, rxMessage.payloadSize);
+        *_srcID = rxMessage.src;
     }
     else
     {
@@ -75,12 +76,12 @@ uint8_t putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, ui
     memcpy((void *)&buffer->buff[buffer->in], data, size); /* 버퍼에 저장 */
     buffer->buff[buffer->in].checksum = data[size - 2];
 
-    //for(int i=0; i<size; i++)
-    //    PRINTF("%x ", data[i]);
-    //PRINTF("      %d byte\r\n",size);
+    for(int i=0; i<size; i++)
+        PRINTF("%x ", data[i]);
+    PRINTF("      %d byte\r\n",size);
 
-    uint8_t error_code;
-    if ((buffer->buff[buffer->in].dest != srcID) && (masterMode != true))
+    uint8_t error_code = 0;
+    if ((buffer->buff[buffer->in].dest != srcID) && (isMasterMode != true))
     {
         error_code = 0x01;
         return error_code;
