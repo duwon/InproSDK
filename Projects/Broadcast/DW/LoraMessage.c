@@ -7,9 +7,9 @@
 messagePacket_TypeDef txMessage;
 messageFIFO_TypeDef rxMessageBuffer;
 
-uint8_t destID = MASTER_ID;
-uint8_t srcID = 0;
-bool isMasterMode = false;
+uint8_t destID = MASTER_ID; /* 마스트 ID */
+uint8_t srcID = 0;          /* 노드 ID */
+bool isMasterMode = false;  /* 마스터 모드 플래그 */
 
 static uint8_t calChecksum(uint8_t *messageData, uint8_t messageSize);
 
@@ -30,6 +30,12 @@ ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *rxData)
     return SUCCESS;
 }
 
+/**
+  * @brief  Lora을 이용한 메시지 송신 함수
+  * @param  txData: 
+  * @param  dataLength: Payload 데이터 크기(byte)  
+  * @retval None
+  */
 void sendMessage(uint8_t *txData, uint8_t dataLength)
 {
     if (dataLength > MESSAGE_MAX_PAYLOAD_SIZE)
@@ -45,9 +51,9 @@ void sendMessage(uint8_t *txData, uint8_t dataLength)
     txMessage.src = srcID;
     txMessage.payloadSize = dataLength;
     memcpy((void *)&txMessage.payload, txData, dataLength);
-    txMessage.checksum = calChecksum((uint8_t *)&txMessage, txMessageSize);
+    txMessage.checksum = calChecksum((uint8_t *)&txMessage, txMessageSize); /* 송신 메시지 구조체 정보 완성 */
 
-    memcpy(txMessageBuff, (void *)&txMessage, txMessageSize);
+    memcpy(txMessageBuff, (void *)&txMessage, txMessageSize);  /* 송신 메시지 크기가 가변임으로 구조체의 체크섬과 ETX는 잘려서 복사됨 */
 
     txMessageBuff[txMessageSize - 2] = txMessage.checksum;
     txMessageBuff[txMessageSize - 1] = MESSAGE_ETX;
@@ -71,7 +77,13 @@ void initMessage(void)
     rxMessageBuffer.count = 0;
 }
 
-uint8_t putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size)
+/**
+  * @brief  Lora을 이용한 메시지 송신 함수
+  * @param  txData: Payload 데이터
+  * @param  dataLength: Payload 데이터 크기(byte)  
+  * @retval None
+  */
+messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size)
 {
     memcpy((void *)&buffer->buff[buffer->in], data, size); /* 버퍼에 저장 */
     buffer->buff[buffer->in].checksum = data[size - 2];
@@ -80,41 +92,34 @@ uint8_t putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, ui
         PRINTF("%x ", data[i]);
     PRINTF("      %d byte\r\n",size);
 
-    uint8_t error_code = 0;
-    if ((buffer->buff[buffer->in].dest != srcID) && (isMasterMode != true))
+    if ((buffer->buff[buffer->in].dest != srcID) && (isMasterMode != true)) /* 내 ID의 메시지가 아니거나 마스터 모드가 아니면 ERROR 1 리턴 */
     {
-        error_code = 0x01;
-        return error_code;
+        return NOT_MY_MESSAGE;
     }
-    else if (buffer->count == MESSAGE_BUFFER_SIZE) /* 데이터가 버퍼에 가득 찼으면 ERROR 리턴 */
+    else if (buffer->count == MESSAGE_BUFFER_SIZE) /* 데이터가 버퍼에 가득 찼으면 ERROR 2 리턴 */
     {
         //PRINTF("buffer full \r\n");
-        error_code = 0x02;
-        return error_code;
+        return BUFFER_FULL;
     }
     else if (size > (MESSAGE_HEADER_SIZE + MESSAGE_MAX_PAYLOAD_SIZE))
     {
         //PRINTF("payload oversize \r\n");
-        error_code = 0x03;
-        return error_code;
+        return OVERSIZE_MESSAGE;
     }
     else if (size != (buffer->buff[buffer->in].payloadSize + MESSAGE_HEADER_SIZE))
     {
         //PRINTF("different size\r\n");
-        error_code = 0x04;
-        return error_code;
+        return DIFFERENT_MESSAGE_SIZE;
     }
     else if (buffer->buff[buffer->in].checksum != calChecksum(data, size))
     {
         //PRINTF("calChecksum \r\n");
-        error_code = 0x05;
-        return error_code;
+        return CHECKSUM_FAIL;
     }
     else if (buffer->buff[buffer->in].stx != 0xA5A5)
     {
         //PRINTF("not stx");
-        error_code = 0x06;
-        return error_code;
+        return NOT_STX;
     }
 
     buffer->in++;
@@ -126,7 +131,7 @@ uint8_t putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, ui
     else
     {
     }
-    return 0;
+    return PUT_SUCCESS;
 }
 
 ErrorStatus getMessageBuffer(volatile messageFIFO_TypeDef *buffer, messagePacket_TypeDef *data)

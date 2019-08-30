@@ -38,7 +38,16 @@ typedef struct {
     messagePacket_TypeDef buff[MESSAGE_BUFFER_SIZE];
 } messageFIFO_TypeDef;
 
-
+typedef enum
+{
+    PUT_SUCCESS = 0,
+    NOT_MY_MESSAGE = 1,
+    BUFFER_FULL,
+    OVERSIZE_MESSAGE,
+    DIFFERENT_MESSAGE_SIZE,
+    CHECKSUM_FAIL,
+    NOT_STX
+} messageError_TypeDef;
 
 
 extern bool isMasterMode;
