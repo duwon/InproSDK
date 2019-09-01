@@ -35,6 +35,7 @@ Maintainer: Miguel Luis and Gregory Cristian
 #include "radio.h"
 #include "debug.h"
 #include "vcom.h"
+#include "bsp.h"
 
 /*!
  *  \brief Unique Devices IDs register set ( STM32L0xxx )
@@ -114,6 +115,7 @@ void HW_Init( void )
     BSP_LED_Init( LED1 );
     BSP_LED_Init( LED2 );
     BSP_PB_Init(BUTTON_KEY,BUTTON_MODE_GPIO);
+    BSP_sensor_Init();
 
     McuInitialized = true;
   }

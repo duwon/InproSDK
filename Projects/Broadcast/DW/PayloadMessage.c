@@ -5,12 +5,12 @@
 #include "timeServer.h"
 #include "hw.h"
 
-#define BOOTING_INTERVAL_TIME               60000
-#define BOOTING_START_TIME                  60000
+#define BOOTING_INTERVAL_TIME               5000
+#define BOOTING_START_TIME                  5000
 static  TimerEvent_t timerBooting;          /* 부팅시 ID 받는 타이머. ID 받으면 종료 */
 
 
-payloadPacket_TypeDef txPayloadData;        /* 송신용 Payload 버퍼 구조체 */
+
 IDList_TypeDef IDList;                      /* 노드 아이디 정보 구조체 */
 
 
@@ -28,10 +28,10 @@ static uint8_t getIDInfo(search_type _type, uint8_t *value);
 void procPayloadData(void)
 {
     uint8_t tempSrcID;
-    uint8_t tempRxPayloadBuffer[MESSAGE_MAX_PAYLOAD_SIZE];
-    if (getMessagePayload((void *)&tempSrcID, tempRxPayloadBuffer) == SUCCESS)
+    payloadPacket_TypeDef tempRxPayloadBuffer;
+    if (getMessagePayload((void *)&tempSrcID, (uint8_t *)&tempRxPayloadBuffer) == SUCCESS)
     {
-        switch (tempRxPayloadBuffer[0])
+        switch (tempRxPayloadBuffer.msgID)
         {
         case ERROR:
             break;
@@ -49,18 +49,20 @@ void procPayloadData(void)
   */
 void procMasterMode(void)
 {
+    float temperature = 0;
+    float humidity = 0;
     uint8_t tempSrcID;
-    uint8_t tempRxPayloadBuffer[MESSAGE_MAX_PAYLOAD_SIZE];
-    if (getMessagePayload((void *)&tempSrcID, tempRxPayloadBuffer) == SUCCESS)
+    payloadPacket_TypeDef tempRxPayloadBuffer;
+    if (getMessagePayload((void *)&tempSrcID, (uint8_t *)&tempRxPayloadBuffer) == SUCCESS)
     {
         uint32_t tempUID = 0;
         //PRINTF("SRC ID: %x, UID: %x",tempSrcID, tempRxPayloadBuffer[1]);
-        
-        switch (tempRxPayloadBuffer[0])
+
+        switch (tempRxPayloadBuffer.msgID)
         {
         case MTYPE_REQUEST_ID:
 
-            memcpy((void *)&tempUID, (void *)&tempRxPayloadBuffer[1], 4);
+            memcpy((void *)&tempUID, tempRxPayloadBuffer.data, 4);
             if (InsertIDList(tempUID) != SUCCESS)
             {
             }
@@ -69,14 +71,19 @@ void procMasterMode(void)
             uint8_t tempTxData;
             tempTxData = getIDInfo(SEARCH_UID, (uint8_t *)&tempUID);
             sendPayloadData(MTYPE_RESPONSE_ID, (void *)&tempTxData);
-            PRINTF("tempTxData : %x\r\n",tempTxData);
+            PRINTF("tempTxData : %x\r\n", tempTxData);
 
-            //
-
+#ifdef _DEBUG_
             for (int i = 0; i < IDList.count; i++)
                 PRINTF("\r\n ID : %d, UID : %x\r\n", IDList.idInfo[i].id, IDList.idInfo[i].uid);
 
-            //
+#endif
+            break;
+        case MTYPE_TEMP_HUMI:
+                memcpy( (void *)&temperature,(void *)&tempRxPayloadBuffer.data[0], 4);
+                memcpy( (void *)&humidity, (void *)&tempRxPayloadBuffer.data[4],4);
+
+                PRINTF("SRC ID : %d, Temp: %.1f, Humi: %.f \r\n",tempSrcID, temperature, humidity);
             break;
         case ERROR:
             break;
@@ -88,11 +95,12 @@ void procMasterMode(void)
 
 void sendPayloadData(uint8_t msgID, uint8_t *data)
 {
-    txPayloadData.msgID = msgID;
-    txPayloadData.length = getPayloadLength(msgID);
-    memcpy(txPayloadData.data, data, txPayloadData.length-2);
-    //PRINTF("txPayloadData.data %X %X %X, data %X %X %X\r\n",txPayloadData.data[0],txPayloadData.data[1],txPayloadData.data[2],data[0],data[1],data[2]);
-    sendMessage((void *)&txPayloadData, txPayloadData.length);
+    payloadPacket_TypeDef tempTxPayloadData;        /* 송신용 Payload 버퍼 구조체 */
+    tempTxPayloadData.msgID = msgID;
+    tempTxPayloadData.length = getPayloadLength(msgID);
+    memcpy(tempTxPayloadData.data, data, tempTxPayloadData.length);
+
+    sendMessage((void *)&tempTxPayloadData, tempTxPayloadData.length + 2);
 }
 
 /**
@@ -135,7 +143,7 @@ void payloadTimerDeInit(void)
   */
 void OnBootingEvent(void *context)
 {
-    static uint8_t numberTimesSent = 0;
+    //static uint8_t numberTimesSent = 0;
 
     uint8_t tempSrc;
     payloadPacket_TypeDef tempRxPayloadBuffer;
@@ -159,11 +167,10 @@ void OnBootingEvent(void *context)
 
     srcID = (rand() % (0xFF - 0x30)) + 0x30;
 
-    numberTimesSent++;
+    //numberTimesSent++;
     sendPayloadData(MTYPE_REQUEST_ID, (void *)&UID_radom);
 
-    uint32_t timerBootingInterval = (rand() % 30000) + BOOTING_INTERVAL_TIME;
-    TimerSetValue(&timerBooting, timerBootingInterval);
+    TimerSetValue(&timerBooting, (rand() % 30000) + BOOTING_INTERVAL_TIME);
     TimerStart(&timerBooting);
 }
 
@@ -217,10 +224,23 @@ static uint8_t getIDInfo(search_type _type, uint8_t *value)
   */
 ErrorStatus InsertIDList(uint32_t _uid)
 {
-    if( getIDInfo(SEARCH_UID, (uint8_t *)&_uid) == 0)
+    if (IDList.count >= MAX_ID_LIST)
     {
-        IDList.idInfo[IDList.count].id = IDList.count;
-        IDList.idInfo[IDList.count].uid = _uid;
+        return ERROR;
+    }
+    else if (getIDInfo(SEARCH_UID, (uint8_t *)&_uid) == 0)
+    {
+        uint8_t assignID = 0;
+        for (int i = 1; i < MAX_ID_LIST; i++)
+        {
+            if (IDList.idInfo[i].id == 0)
+            {
+                assignID = i;
+                break;
+            }
+        }
+        IDList.idInfo[assignID].id = assignID;
+        IDList.idInfo[assignID].uid = _uid;
         IDList.count++;
 
         return SUCCESS;
@@ -230,5 +250,24 @@ ErrorStatus InsertIDList(uint32_t _uid)
     }
 
     return ERROR;
-    
+}
+
+/**
+  * @brief  ID List에 저장
+  * @param  _uid: UID 값
+  * @retval UID가 ID List에 없으면 ID와 UID을 저장하고 SUCESS리턴.
+  */
+ErrorStatus DeleteIDList(uint8_t _id)
+{
+    uint8_t existID = getIDInfo(SEARCH_ID, (uint8_t *)&_id);
+    if (existID != 0)
+    {
+        memset((void *)&IDList.idInfo[existID], 0, sizeof(IDList.idInfo[existID]));
+        IDList.count--;
+        return SUCCESS;
+    }
+    else
+    {
+    }
+    return ERROR;
 }

@@ -33,7 +33,7 @@ typedef enum
 }States_t;
 
 #define RX_TIMEOUT_VALUE                            1000
-#define TX_INTERVAL_TIME                            10000
+#define TX_INTERVAL_TIME                            20000
 
 States_t State = LOWPOWER;
 
@@ -66,17 +66,20 @@ int main( void )
 
     LPM_SetOffMode(LPM_APPLI_Id , LPM_Disable ); /*Disbale Stand-by mode*/
 
-    initMessage();
-
-    BSP_sensor_Init();
-    sensor_t sensor_data;
-    BSP_sensor_Read( &sensor_data );
-    PRINTF("Temp : %.1f     Humi : %.1f\r\n\r\n",sensor_data.temperature, sensor_data.humidity);
-
     RadioInit();
     Radio.Rx( RX_TIMEOUT_VALUE );
 
-    sendMessage(0,3);   /* random 구현을 위한 쓰래기 패킷 전송. 수신 측 RX Done 시 rand() 함수 호출됨 */
+    initMessage();    
+
+
+    /* create random uid */
+    sensor_t sensor_data;
+    BSP_sensor_Read( &sensor_data );
+    srand(sensor_data.temperature * sensor_data.humidity);
+    UID_radom = rand();
+    PRINTF("UID : %x\r\n", UID_radom);
+    InsertIDList(UID_radom);
+
 
     while( 1 )
     {
@@ -91,14 +94,15 @@ int main( void )
             procPayloadData();
 
 
-#if 1       //Message Test   
+#ifdef _DEBUG_
+            //Message Test   
             uint8_t tempSrcID;
             uint8_t tempRxBuffer[MESSAGE_MAX_PAYLOAD_SIZE] = {0,};
             if(getMessagePayload((void*)&tempSrcID, tempRxBuffer) == SUCCESS)
             {
                 if(tempRxBuffer[0] == MTYPE_TESTMESSAGE)
                 {
-                    PRINTF("ID : %d CNT : %d\r\n",tempRxBuffer[1], tempRxBuffer[2]);
+                    PRINTF("ID : %d  T : %d\r\n",tempRxBuffer[1], tempRxBuffer[2]);
                 }
             }
 #endif
@@ -126,10 +130,23 @@ void OnTxDone( void )
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
     Radio.Sleep( );
-    uint8_t errorCode = putMessageBuffer(&rxMessageBuffer, payload, size);
-    if( errorCode != 0)
+    messagePacket_TypeDef nextMessage;
+    destID = payload[4];
+
+    uint8_t errorCode = putMessageBuffer(&rxMessageBuffer, payload, size, rssi, snr);
+    if( errorCode != PUT_SUCCESS)
+    {
         PRINTF("Error code %d\r\n", errorCode);
-    
+    }/*
+    else if((existNextMessage(destID, &nextMessage) == true) && (isMasterMode == true))
+    {
+        sendMessage(nextMessage.payload, nextMessage.payloadSize);
+    }
+    else if(isMasterMode == true)
+    {
+        sendMessage(payload,size);
+    }*/
+
     State = RX_DONE;
 
     //PRINTF("OnRxDone\n\r");
@@ -182,48 +199,58 @@ static void RadioInit(void)
                       0, true, 0, 0, LORA_IQ_INVERSION_ON, true);
 }
 
-static void OnledEvent( void* context )
+static void OnledEvent(void *context)
 {
-  //LED_Toggle( LED1 ) ; 
-
-  TimerStart(&timerLed );
+    //LED_Toggle( LED1 ) ;
+    TimerStart(&timerLed);
 }
 
-static void OnTxEvent( void* context )
+static void OnTxEvent(void *context)
 {
-  static uint8_t cntTx = 0;
-  uint8_t tempBuffer[5] = {MTYPE_TESTMESSAGE, srcID, 0};
-  
-  if(cntTx++ == 150)   cntTx = 0;
-  tempBuffer[2] = cntTx;
+    if (BSP_PB_GetState(BUTTON_USER) == GPIO_PIN_RESET)
+    {
+        srcID = MASTER_ID;
+        isMasterMode = true;
+        PRINTF("key pressed. ID:%d \r\n", srcID);
+        payloadTimerDeInit();
+    }
 
-  if(BSP_PB_GetState(BUTTON_USER)==GPIO_PIN_RESET)
-  {
-    srcID = MASTER_ID;
-    isMasterMode = true;
-    tempBuffer[1] = srcID;
-    PRINTF("key pressed. ID:%d \r\n",srcID);
-    payloadTimerDeInit();
-  }
-  sendMessage(tempBuffer,3);
+    if (isMasterMode == true)
+    {
+        TimerStop(&timerTx);
+    }
+    else
+    {
+        TimerStart(&timerTx);
+    }
 
-  //LED_Toggle( LED2 ) ;
+    sensor_t sensor_data;
+    uint8_t tempTxData[8] = {0,};
 
-  TimerStart(&timerTx );
+    BSP_sensor_Read( &sensor_data );
+    memcpy((void *)&tempTxData[0], (void *)&sensor_data.temperature, 4);
+    memcpy((void *)&tempTxData[4], (void *)&sensor_data.humidity, 4);
+
+    PRINTF("Temp : %.1f     Humi : %.1f   \r\n\r\n",sensor_data.temperature, sensor_data.humidity);
+    sendPayloadData(MTYPE_TEMP_HUMI, tempTxData);
+
+
+
 }
 
 static void mainTimerInit(void)
 {
+#ifdef _DEBUG_
     /* Led Timers */
-    TimerInit(&timerLed, OnledEvent);   
-    TimerSetValue( &timerLed, 1000);
-    TimerStart(&timerLed );
-
+    TimerInit(&timerLed, OnledEvent);
+    TimerSetValue(&timerLed, 1000);
+    TimerStart(&timerLed);
+#endif
 
     /* Tx Timers */
-    TimerInit(&timerTx, OnTxEvent);   
-    TimerSetValue( &timerTx, TX_INTERVAL_TIME);
-    TimerStart(&timerTx );
+    TimerInit(&timerTx, OnTxEvent);
+    TimerSetValue(&timerTx, TX_INTERVAL_TIME);
+    TimerStart(&timerTx);
 }
 
 static void procLoraStage(void)
@@ -231,31 +258,29 @@ static void procLoraStage(void)
     switch (State)
     {
     case RX_DONE:
-        if(isMasterMode == true)
+        if (isMasterMode == true)
         {
             Radio.Rx(RX_TIMEOUT_VALUE);
-        }    
-#if 1
-        if(UID_radom == 0)
-        {
-            srand(HW_RTC_GetTimerValue());
-            UID_radom = rand();
-            PRINTF("UID : %x\r\n", UID_radom);
-            InsertIDList(UID_radom);
         }
-#endif
+
+#ifdef _DEBUG_
         LED_Toggle(LED1);
+#endif
         State = LOWPOWER;
         break;
     case TX_DONE:
         Radio.Rx(RX_TIMEOUT_VALUE);
-
+#ifdef _DEBUG_
         LED_Toggle(LED2);
+#endif
         State = LOWPOWER;
         break;
     case RX_TIMEOUT:
     case RX_ERROR:
-        Radio.Rx(RX_TIMEOUT_VALUE);
+        if (isMasterMode == true)
+        {
+            Radio.Rx(RX_TIMEOUT_VALUE);
+        }
 
         State = LOWPOWER;
         break;

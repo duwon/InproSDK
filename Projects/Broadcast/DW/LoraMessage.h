@@ -20,6 +20,8 @@ extern "C" {
 #define MASTER_ID                   0
 #define UID                         *(__IO uint32_t *)(UID_BASE)
 
+#define MAX_ID_LIST                 50
+
 typedef struct
 {
     uint16_t    stx;
@@ -30,6 +32,8 @@ typedef struct
     uint8_t     payload[MESSAGE_MAX_PAYLOAD_SIZE];
     uint8_t     checksum;
     uint8_t     etx;
+    int16_t     rssi;
+    uint8_t     snr;
 } messagePacket_TypeDef;
 
 typedef struct {
@@ -61,9 +65,9 @@ extern uint32_t UID_radom;
 void initMessage(void);
 ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *rxData);
 void sendMessage(uint8_t *txData, uint8_t dataLength);
-messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size);
+messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size,  int16_t rssi, int8_t snr);
 ErrorStatus getMessageBuffer(volatile messageFIFO_TypeDef *buffer, messagePacket_TypeDef *data);
-
+bool existNextMessage(uint8_t _id, messagePacket_TypeDef *nextMessage);
 
 
 

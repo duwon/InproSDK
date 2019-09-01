@@ -5,6 +5,7 @@
 #include "util_console.h"
 
 messagePacket_TypeDef txMessage;
+messagePacket_TypeDef nextTxMessage[MAX_ID_LIST];
 messageFIFO_TypeDef rxMessageBuffer;
 
 uint8_t destID = MASTER_ID; /* 마스터 ID */
@@ -83,6 +84,8 @@ void initMessage(void)
     rxMessageBuffer.in = 0;
     rxMessageBuffer.out = 0;
     rxMessageBuffer.count = 0;
+
+    //sendMessage(0,3);   /* random 구현을 위한 쓰래기 패킷 전송. 수신 측 RX Done 시 rand() 함수 호출됨 */
 }
 
 /**
@@ -91,7 +94,7 @@ void initMessage(void)
   * @param  dataLength: Payload 데이터 크기(byte)  
   * @retval None
   */
-messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size)
+messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size,  int16_t rssi, int8_t snr)
 {
     memcpy((void *)&buffer->buff[buffer->in], data, size); /* 버퍼에 저장 */
     buffer->buff[buffer->in].checksum = data[size - 2];
@@ -130,6 +133,9 @@ messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint
         return NOT_STX;
     }
 
+    buffer->buff[buffer->in].rssi = rssi;
+    buffer->buff[buffer->in].snr = snr;
+
     buffer->in++;
     buffer->count++;                       /* 버퍼에 저장된 갯수 1 증가 */
     if (buffer->in == MESSAGE_BUFFER_SIZE) /* 시작 인덱스가 버퍼의 끝이면 */
@@ -140,12 +146,15 @@ messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint
     {
     }
 
-
+#ifdef _DEBUG_
     for(int i=0; i<size; i++)
         PRINTF("%x ", data[i]);
     PRINTF("      %d byte    ",size);
-    PRINTF("SRC: %X    ",buffer->buff[buffer->in-1].src);
-    PRINTF("payloadSize: %X    \r\n",buffer->buff[buffer->in-1].payloadSize);
+    PRINTF("SRC: %X, ",buffer->buff[buffer->in-1].src);
+    PRINTF("payloadSize: %X, ",buffer->buff[buffer->in-1].payloadSize);
+    PRINTF("RSSI: %ddBm, ",buffer->buff[buffer->in-1].rssi);
+    PRINTF("SNR: %d    \r\n",buffer->buff[buffer->in-1].snr);
+#endif
 
     return PUT_SUCCESS;
 }
@@ -183,4 +192,25 @@ static uint8_t calChecksum(uint8_t *messageData, uint8_t messageSize)
     }
 
     return tempChecksum;
+}
+
+/**
+  * @brief  메시지 수신 시 다음에 보낼 데이터가 있는지 확인
+  * @param  _id: 메시지가 있는지 검색 할 Node ID
+  * @param  nextMessage: 메시지 구조체 
+  * @retval 해당 ID의 보낼 메시지가 있으면 true
+  */
+bool existNextMessage(uint8_t _id, messagePacket_TypeDef *nextMessage)
+{
+    for (int i = 0; i < MAX_ID_LIST; i++)
+    {
+        if (nextTxMessage[i].dest == _id)
+        {
+            memcpy((void *)&nextMessage, (void *)&nextTxMessage[i], sizeof(nextTxMessage[i]));
+            memset((void *)&nextTxMessage[i], 0, sizeof(nextTxMessage[i]));
+            return true;
+        }
+    }
+
+    return false;
 }

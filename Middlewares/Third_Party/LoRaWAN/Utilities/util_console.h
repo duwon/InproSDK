@@ -30,9 +30,13 @@ extern "C"
 {
 #endif
 
-#define PPRINTF(...)     do{ } while( 0!= TraceSend(__VA_ARGS__) ) //Polling Mode
+#define _DEBUG_
 
 #define PRINTF(...)     do{  TraceSend(__VA_ARGS__); }while(0)
+//#define PRINTF(...)     
+
+#define PPRINTF(...)     do{ } while( 0!= TraceSend(__VA_ARGS__) ) //Polling Mode
+
 #define PRINTNOW()      do{                                                           \
                           SysTime_t stime  =SysTimeGetMcuTime();                      \
                           TraceSend("%3ds%03d: ",stime.Seconds, stime.SubSeconds); \

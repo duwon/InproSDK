@@ -4,6 +4,7 @@
         "hw_conf.h": "c",
         "controlmessage.h": "c",
         "b-l072z-lrwan1.h": "c",
-        "loramessage.h": "c"
+        "loramessage.h": "c",
+        "vcom.h": "c"
     }
 }
