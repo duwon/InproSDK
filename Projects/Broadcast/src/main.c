@@ -1,5 +1,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include <string.h>
+#include <stdlib.h>
 #include "hw.h"
 #include "radio.h"
 #include "timeServer.h"
@@ -7,6 +8,7 @@
 #include "vcom.h"
 #include "LoraMessage.h"
 #include "PayloadMessage.h"
+#include "bsp.h"
 
 #define RF_FREQUENCY                                920000000 // Hz
 #define TX_OUTPUT_POWER                             14        // dBm
@@ -30,7 +32,7 @@ typedef enum
     RX_DONE
 }States_t;
 
-#define RX_TIMEOUT_VALUE                            5000
+#define RX_TIMEOUT_VALUE                            1000
 #define TX_INTERVAL_TIME                            10000
 
 States_t State = LOWPOWER;
@@ -66,39 +68,51 @@ int main( void )
 
     initMessage();
 
+    BSP_sensor_Init();
+    sensor_t sensor_data;
+    BSP_sensor_Read( &sensor_data );
+    PRINTF("Temp : %.1f     Humi : %.1f\r\n\r\n",sensor_data.temperature, sensor_data.humidity);
+
     RadioInit();
     Radio.Rx( RX_TIMEOUT_VALUE );
 
-    
-    PRINTF("UID : %x\r\n", UID);
-    //InsertIDList(UID);
+    sendMessage(0,3);   /* random 구현을 위한 쓰래기 패킷 전송. 수신 측 RX Done 시 rand() 함수 호출됨 */
+
     while( 1 )
     {
-        procLoraStage();
-        procPayloadData();
+        procLoraStage();  
 
-#if 1    //Message Test   
-		uint8_t tempSrcID;
-        uint8_t tempRxBuffer[MESSAGE_MAX_PAYLOAD_SIZE] = {0,};
-        if(getMessagePayload((void*)&tempSrcID, tempRxBuffer) == SUCCESS)
+        if(isMasterMode == true)
         {
-            if(tempRxBuffer[0] == MTYPE_TESTMESSAGE)
+            procMasterMode();
+        }
+        else if(existGetID == true)
+        {
+            procPayloadData();
+
+
+#if 1       //Message Test   
+            uint8_t tempSrcID;
+            uint8_t tempRxBuffer[MESSAGE_MAX_PAYLOAD_SIZE] = {0,};
+            if(getMessagePayload((void*)&tempSrcID, tempRxBuffer) == SUCCESS)
             {
-                PRINTF("ID : %d CNT : %d\r\n",tempRxBuffer[1], tempRxBuffer[2]);
+                if(tempRxBuffer[0] == MTYPE_TESTMESSAGE)
+                {
+                    PRINTF("ID : %d CNT : %d\r\n",tempRxBuffer[1], tempRxBuffer[2]);
+                }
             }
-        }
 #endif
-        DISABLE_IRQ( );
-        if (State == LOWPOWER) /* if an interupt has occured after __disable_irq, it is kept pending and cortex will not enter low power anyway */
-        {
-            #ifndef LOW_POWER_DISABLE
+
+            DISABLE_IRQ( );
+            if (State == LOWPOWER) /* if an interupt has occured after __disable_irq, it is kept pending and cortex will not enter low power anyway */
+            {
                 LPM_EnterLowPower( );
-            #endif
-        }
-        else
-        {
-        }
-        ENABLE_IRQ( );
+            }
+            else
+            {
+            }
+            ENABLE_IRQ( );
+        }        
     }
 }
 
@@ -106,7 +120,7 @@ void OnTxDone( void )
 {
     Radio.Sleep( );
     State = TX_DONE;
-    PRINTF("                                               OnTxDone\n\r");
+    PRINTF("        OnTxDone\n\r");
 }
 
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
@@ -114,7 +128,7 @@ void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
     Radio.Sleep( );
     uint8_t errorCode = putMessageBuffer(&rxMessageBuffer, payload, size);
     if( errorCode != 0)
-        PRINTF("error code %d\r\n", errorCode);
+        PRINTF("Error code %d\r\n", errorCode);
     
     State = RX_DONE;
 
@@ -217,8 +231,19 @@ static void procLoraStage(void)
     switch (State)
     {
     case RX_DONE:
-        Radio.Rx(RX_TIMEOUT_VALUE);
-
+        if(isMasterMode == true)
+        {
+            Radio.Rx(RX_TIMEOUT_VALUE);
+        }    
+#if 1
+        if(UID_radom == 0)
+        {
+            srand(HW_RTC_GetTimerValue());
+            UID_radom = rand();
+            PRINTF("UID : %x\r\n", UID_radom);
+            InsertIDList(UID_radom);
+        }
+#endif
         LED_Toggle(LED1);
         State = LOWPOWER;
         break;

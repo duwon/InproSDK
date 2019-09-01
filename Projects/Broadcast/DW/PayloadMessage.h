@@ -21,7 +21,7 @@ extern "C" {
 
 typedef struct
 {
-    uint16_t    msgID;
+    uint8_t    msgID;
     uint8_t     length;
     uint8_t     data[MESSAGE_MAX_PAYLOAD_SIZE-2];
 } payloadPacket_TypeDef;
@@ -47,11 +47,11 @@ typedef enum
 
 
 void procPayloadData(void);
+void procMasterMode(void);
 void sendPayloadData(uint8_t msgID, uint8_t *data);
 void pyaloadTimerInit(void);
 void payloadTimerDeInit(void);
 void OnBootingEvent( void* context );
-
 ErrorStatus InsertIDList(uint32_t _uid);
 
 
@@ -59,7 +59,7 @@ static const uint8_t msgIDLength[TOTAL_MSGID_CNT][2] =
 {
     {MTYPE_TESTMESSAGE, 3},
     {MTYPE_REQUEST_ID, 6},
-    {MTYPE_RESPONSE_ID, 6}
+    {MTYPE_RESPONSE_ID, 3}
 };
 
 

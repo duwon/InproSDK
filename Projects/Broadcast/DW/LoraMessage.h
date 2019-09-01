@@ -1,5 +1,5 @@
-#ifndef __CONTROLMESSAGE_H__
-#define __CONTROLMESSAGE_H__
+#ifndef __LORAMESSAGE_H__
+#define __LORAMESSAGE_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,7 +18,8 @@ extern "C" {
 #define MESSAGE_ETX                 0x04
 
 #define MASTER_ID                   0
-#define UID                         *(__IO uint32_t *)UID_BASE
+#define UID                         *(__IO uint32_t *)(UID_BASE)
+
 typedef struct
 {
     uint16_t    stx;
@@ -51,14 +52,16 @@ typedef enum
 
 
 extern bool isMasterMode;
+extern bool existGetID;
 extern messageFIFO_TypeDef rxMessageBuffer;;
 extern uint8_t srcID;
 extern uint8_t destID;
+extern uint32_t UID_radom;
 
 void initMessage(void);
 ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *rxData);
 void sendMessage(uint8_t *txData, uint8_t dataLength);
-ErrorStatus putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size);
+messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size);
 ErrorStatus getMessageBuffer(volatile messageFIFO_TypeDef *buffer, messagePacket_TypeDef *data);
 
 
@@ -72,4 +75,4 @@ ErrorStatus getMessageBuffer(volatile messageFIFO_TypeDef *buffer, messagePacket
 }
 #endif
 
-#endif /* __CONTROLMESSAGE_H__ */
+#endif /* __LORAMESSAGE_H__ */

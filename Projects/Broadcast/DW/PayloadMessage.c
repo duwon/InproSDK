@@ -3,9 +3,10 @@
 #include <stdlib.h>
 #include "PayloadMessage.h"
 #include "timeServer.h"
+#include "hw.h"
 
-#define BOOTING_INTERVAL_TIME               5000
-#define BOOTING_START_TIME                  7000
+#define BOOTING_INTERVAL_TIME               60000
+#define BOOTING_START_TIME                  60000
 static  TimerEvent_t timerBooting;          /* 부팅시 ID 받는 타이머. ID 받으면 종료 */
 
 
@@ -15,9 +16,7 @@ IDList_TypeDef IDList;                      /* 노드 아이디 정보 구조체
 
 static uint8_t getPayloadLength(uint8_t msgID);
 static void OnBootingEvent( void* context );
-
 static uint8_t getIDInfo(search_type _type, uint8_t *value);
-static ErrorStatus InsertIDList(uint32_t _uid);
 
 
 
@@ -30,27 +29,52 @@ void procPayloadData(void)
 {
     uint8_t tempSrcID;
     uint8_t tempRxPayloadBuffer[MESSAGE_MAX_PAYLOAD_SIZE];
-    if (getMessagePayload((void*)&tempSrcID, tempRxPayloadBuffer) == SUCCESS)
+    if (getMessagePayload((void *)&tempSrcID, tempRxPayloadBuffer) == SUCCESS)
     {
-			uint32_t tempUID = 0;
+        switch (tempRxPayloadBuffer[0])
+        {
+        case ERROR:
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+
+/**
+  * @brief  마스터모드의 Payload 데이터 처리 함수.
+  * @param  None 
+  * @retval None
+  */
+void procMasterMode(void)
+{
+    uint8_t tempSrcID;
+    uint8_t tempRxPayloadBuffer[MESSAGE_MAX_PAYLOAD_SIZE];
+    if (getMessagePayload((void *)&tempSrcID, tempRxPayloadBuffer) == SUCCESS)
+    {
+        uint32_t tempUID = 0;
+        //PRINTF("SRC ID: %x, UID: %x",tempSrcID, tempRxPayloadBuffer[1]);
+        
         switch (tempRxPayloadBuffer[0])
         {
         case MTYPE_REQUEST_ID:
-            
-            memcpy((void*)&tempUID, (void*)&tempRxPayloadBuffer[1], 4);
-            if(InsertIDList(tempUID) != SUCCESS)
+
+            memcpy((void *)&tempUID, (void *)&tempRxPayloadBuffer[1], 4);
+            if (InsertIDList(tempUID) != SUCCESS)
             {
-                
             }
+
             destID = tempSrcID;
             uint8_t tempTxData;
             tempTxData = getIDInfo(SEARCH_UID, (uint8_t *)&tempUID);
             sendPayloadData(MTYPE_RESPONSE_ID, (void *)&tempTxData);
+            PRINTF("tempTxData : %x\r\n",tempTxData);
 
             //
 
-            for(int i=1; i<IDList.count;i++)
-                printf(" ID : %d, UID : %x", IDList.idInfo[i].id, IDList.idInfo[i].uid);
+            for (int i = 0; i < IDList.count; i++)
+                PRINTF("\r\n ID : %d, UID : %x\r\n", IDList.idInfo[i].id, IDList.idInfo[i].uid);
 
             //
             break;
@@ -66,15 +90,15 @@ void sendPayloadData(uint8_t msgID, uint8_t *data)
 {
     txPayloadData.msgID = msgID;
     txPayloadData.length = getPayloadLength(msgID);
-    memcpy(txPayloadData.data, data, txPayloadData.length-1);
-
+    memcpy(txPayloadData.data, data, txPayloadData.length-2);
+    //PRINTF("txPayloadData.data %X %X %X, data %X %X %X\r\n",txPayloadData.data[0],txPayloadData.data[1],txPayloadData.data[2],data[0],data[1],data[2]);
     sendMessage((void *)&txPayloadData, txPayloadData.length);
 }
 
 /**
   * @brief  Payload 전송 시 MSG의 길이 찾음
   * @param  msgID: 
-  * @retval Payload 길이. 해당 메시지 ID가 없으면 0
+  * @retval Payload 길이(MsgID + Data). 해당 메시지 ID가 없으면 0
   */
 static uint8_t getPayloadLength(uint8_t msgID)
 {
@@ -93,7 +117,7 @@ static uint8_t getPayloadLength(uint8_t msgID)
 
 void pyaloadTimerInit(void)
 {
-    uint32_t timerBootingInterval = (rand() % BOOTING_INTERVAL_TIME) + BOOTING_START_TIME;
+    uint32_t timerBootingInterval = (rand() % BOOTING_INTERVAL_TIME) + BOOTING_START_TIME; /* 랜덤함수에 문제 있음 */
     TimerInit(&timerBooting, OnBootingEvent);   
     TimerSetValue( &timerBooting, timerBootingInterval);
     TimerStart(&timerBooting );
@@ -114,13 +138,15 @@ void OnBootingEvent(void *context)
     static uint8_t numberTimesSent = 0;
 
     uint8_t tempSrc;
-    uint8_t tempRxPayloadBuffer[MESSAGE_MAX_PAYLOAD_SIZE];
-    if (getMessagePayload((void *)&tempSrc, tempRxPayloadBuffer) == SUCCESS)
+    payloadPacket_TypeDef tempRxPayloadBuffer;
+    if (getMessagePayload((void *)&tempSrc, (uint8_t *)&tempRxPayloadBuffer) == SUCCESS)
     {
-        if (tempRxPayloadBuffer[0] == MTYPE_RESPONSE_ID)
+        PRINTF("msg type: %X, length: %x, ID: %x \r\n",tempRxPayloadBuffer.msgID,tempRxPayloadBuffer.length,tempRxPayloadBuffer.data[0]);
+        if (tempRxPayloadBuffer.msgID == MTYPE_RESPONSE_ID)
         {
-            srcID = tempRxPayloadBuffer[1];
+            srcID = tempRxPayloadBuffer.data[0];
             TimerStop(&timerBooting);
+            existGetID = true;
             return;
         }
         else
@@ -134,7 +160,7 @@ void OnBootingEvent(void *context)
     srcID = (rand() % (0xFF - 0x30)) + 0x30;
 
     numberTimesSent++;
-    sendPayloadData(MTYPE_REQUEST_ID, (void *)&UID);
+    sendPayloadData(MTYPE_REQUEST_ID, (void *)&UID_radom);
 
     uint32_t timerBootingInterval = (rand() % 30000) + BOOTING_INTERVAL_TIME;
     TimerSetValue(&timerBooting, timerBootingInterval);
@@ -156,17 +182,27 @@ void assignNodeID(void)
 static uint8_t getIDInfo(search_type _type, uint8_t *value)
 {
     uint32_t searchUID =0;
-
-    memcpy((void*)&searchUID, value, 4);
-
-    for(int i=1; i<IDList.count; i++)
+    if(_type == SEARCH_UID)
     {
-        if(IDList.idInfo[i].uid == searchUID )
+        memcpy((void*)&searchUID, value, 4);
+        for(int i=1; i<IDList.count; i++)
         {
-            return i;
-        }else if(IDList.idInfo[i].id == *value )
+            if(IDList.idInfo[i].uid == searchUID )
+            {
+                PRINTF("UID index: %d\r\n", i);
+                return i;
+            }
+        }        
+    }
+    else
+    {
+        for(int i=1; i<IDList.count; i++)
         {
-            return i;
+            if(IDList.idInfo[i].id == *value )
+            {
+                PRINTF("ID index: %d\r\n", i);
+                return i;
+            }
         }
     }
 
@@ -181,11 +217,12 @@ static uint8_t getIDInfo(search_type _type, uint8_t *value)
   */
 ErrorStatus InsertIDList(uint32_t _uid)
 {
-    if( getIDInfo(SEARCH_UID, (uint8_t *)&_uid) != 0)
+    if( getIDInfo(SEARCH_UID, (uint8_t *)&_uid) == 0)
     {
         IDList.idInfo[IDList.count].id = IDList.count;
         IDList.idInfo[IDList.count].uid = _uid;
         IDList.count++;
+
         return SUCCESS;
     }
     else

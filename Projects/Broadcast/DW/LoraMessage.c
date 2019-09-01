@@ -7,12 +7,20 @@
 messagePacket_TypeDef txMessage;
 messageFIFO_TypeDef rxMessageBuffer;
 
-uint8_t destID = MASTER_ID; /* 마스트 ID */
-uint8_t srcID = 0;          /* 노드 ID */
+uint8_t destID = MASTER_ID; /* 마스터 ID */
+uint8_t srcID = 50;          /* 노드 ID */
 bool isMasterMode = false;  /* 마스터 모드 플래그 */
+bool existGetID = false;    /* 새로 부여 받은 ID가 존재? */
+uint32_t UID_radom;         /* UID 랜덤값. 임시 사용. */
 
 static uint8_t calChecksum(uint8_t *messageData, uint8_t messageSize);
 
+/**
+  * @brief  Lora의 수신된 메시지 버퍼에서 Payload data만 분리
+  * @param  _srcID: 메시지 발신자 ID. 마스터 모드일 경우 사용됨
+  * @param  rxData: Payload Data  
+  * @retval SUCESS: 데이터 있음. ERROR: 데이터 없음
+  */
 ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *rxData)
 {
     messagePacket_TypeDef rxMessage;
@@ -50,9 +58,9 @@ void sendMessage(uint8_t *txData, uint8_t dataLength)
     txMessage.dest = destID;
     txMessage.src = srcID;
     txMessage.payloadSize = dataLength;
-    memcpy((void *)&txMessage.payload, txData, dataLength);
+    memcpy(txMessage.payload, txData, dataLength);
     txMessage.checksum = calChecksum((uint8_t *)&txMessage, txMessageSize); /* 송신 메시지 구조체 정보 완성 */
-
+    //PRINTF("PAYLOAD : %X %X %X\r\n",txMessage.payload[0],txMessage.payload[1],txMessage.payload[2]);
     memcpy(txMessageBuff, (void *)&txMessage, txMessageSize);  /* 송신 메시지 크기가 가변임으로 구조체의 체크섬과 ETX는 잘려서 복사됨 */
 
     txMessageBuff[txMessageSize - 2] = txMessage.checksum;
@@ -61,7 +69,7 @@ void sendMessage(uint8_t *txData, uint8_t dataLength)
     Radio.Send(txMessageBuff, txMessageSize);
     for (int i = 0; i < txMessageSize; i++)
         PRINTF("%x ", txMessageBuff[i]);
-    PRINTF("\r\n");
+    //PRINTF("\r\n");
 }
 
 void initMessage(void)
@@ -88,9 +96,9 @@ messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint
     memcpy((void *)&buffer->buff[buffer->in], data, size); /* 버퍼에 저장 */
     buffer->buff[buffer->in].checksum = data[size - 2];
 
-    for(int i=0; i<size; i++)
-        PRINTF("%x ", data[i]);
-    PRINTF("      %d byte\r\n",size);
+    //for(int i=0; i<size; i++)
+    //    PRINTF("%x ", data[i]);
+    //PRINTF("      %d byte    ",size);
 
     if ((buffer->buff[buffer->in].dest != srcID) && (isMasterMode != true)) /* 내 ID의 메시지가 아니거나 마스터 모드가 아니면 ERROR 1 리턴 */
     {
@@ -131,6 +139,14 @@ messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint
     else
     {
     }
+
+
+    for(int i=0; i<size; i++)
+        PRINTF("%x ", data[i]);
+    PRINTF("      %d byte    ",size);
+    PRINTF("SRC: %X    ",buffer->buff[buffer->in-1].src);
+    PRINTF("payloadSize: %X    \r\n",buffer->buff[buffer->in-1].payloadSize);
+
     return PUT_SUCCESS;
 }
 
