@@ -253,9 +253,9 @@ ErrorStatus InsertIDList(uint32_t _uid)
 }
 
 /**
-  * @brief  ID List에 저장
+  * @brief  ID List에서 삭제
   * @param  _uid: UID 값
-  * @retval UID가 ID List에 없으면 ID와 UID을 저장하고 SUCESS리턴.
+  * @retval ID가 있으면 삭제하고 SUCCESS 리턴.
   */
 ErrorStatus DeleteIDList(uint8_t _id)
 {

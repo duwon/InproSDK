@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include "LoraRadio.h"
 #include "LoraMessage.h"
-#include "radio.h"
 #include "util_console.h"
 
 messagePacket_TypeDef txMessage;
@@ -9,7 +9,7 @@ messagePacket_TypeDef nextTxMessage[MAX_ID_LIST];
 messageFIFO_TypeDef rxMessageBuffer;
 
 uint8_t destID = MASTER_ID; /* 마스터 ID */
-uint8_t srcID = 50;          /* 노드 ID */
+uint8_t srcID = MAX_ID_LIST;/* 노드 ID */
 bool isMasterMode = false;  /* 마스터 모드 플래그 */
 bool existGetID = false;    /* 새로 부여 받은 ID가 존재? */
 uint32_t UID_radom;         /* UID 랜덤값. 임시 사용. */
@@ -18,8 +18,8 @@ static uint8_t calChecksum(uint8_t *messageData, uint8_t messageSize);
 
 /**
   * @brief  Lora의 수신된 메시지 버퍼에서 Payload data만 분리
-  * @param  _srcID: 메시지 발신자 ID. 마스터 모드일 경우 사용됨
-  * @param  rxData: Payload Data  
+  * @param  _srcID: 되돌려 받을 메시지 발신자 ID. 마스터 모드일 경우 사용됨
+  * @param  rxData: 되돌려 받을 Payload Data
   * @retval SUCESS: 데이터 있음. ERROR: 데이터 없음
   */
 ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *rxData)
@@ -41,7 +41,7 @@ ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *rxData)
 
 /**
   * @brief  Lora을 이용한 메시지 송신 함수
-  * @param  txData: 
+  * @param  txData: Payload Data
   * @param  dataLength: Payload 데이터 크기(byte)  
   * @retval None
   */
@@ -197,16 +197,16 @@ static uint8_t calChecksum(uint8_t *messageData, uint8_t messageSize)
 /**
   * @brief  메시지 수신 시 다음에 보낼 데이터가 있는지 확인
   * @param  _id: 메시지가 있는지 검색 할 Node ID
-  * @param  nextMessage: 메시지 구조체 
+  * @param  Message: 메시지 구조체 
   * @retval 해당 ID의 보낼 메시지가 있으면 true
   */
-bool existNextMessage(uint8_t _id, messagePacket_TypeDef *nextMessage)
+bool existNextMessage(uint8_t _id, messagePacket_TypeDef *Message)
 {
     for (int i = 0; i < MAX_ID_LIST; i++)
     {
         if (nextTxMessage[i].dest == _id)
         {
-            memcpy((void *)&nextMessage, (void *)&nextTxMessage[i], sizeof(nextTxMessage[i]));
+            memcpy((void *)&Message, (void *)&nextTxMessage[i], sizeof(nextTxMessage[i]));
             memset((void *)&nextTxMessage[i], 0, sizeof(nextTxMessage[i]));
             return true;
         }
