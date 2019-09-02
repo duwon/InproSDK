@@ -1,6 +1,7 @@
 #include "LoraRadio.h"
 #include "util_console.h"
 #include "LoraMessage.h"
+#include "PayloadMessage.h"
 
 
 
@@ -16,6 +17,13 @@
 
 States_t State = LOWPOWER;
 
+
+void OnTxDone( void ); /* brief Function to be executed on Radio Tx Done event */
+void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr ); /* brief Function to be executed on Radio Rx Done event */
+void OnTxTimeout( void ); /* brief Function executed on Radio Tx Timeout event */
+void OnRxTimeout( void ); /* brief Function executed on Radio Rx Timeout event */
+void OnRxError( void ); /* brief Function executed on Radio Rx Error event */
+
 void OnTxDone( void )
 {
     Radio.Sleep( );
@@ -25,36 +33,25 @@ void OnTxDone( void )
 
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
-    Radio.Sleep( );
-    messagePacket_TypeDef nextMessage;
-    destID = payload[4];
-
+    Radio.Sleep();
     uint8_t errorCode = putMessageBuffer(&rxMessageBuffer, payload, size, rssi, snr);
-    if( errorCode != PUT_SUCCESS)
+    
+    if(errorCode == NOT_MY_MESSAGE)
+    {
+        State = RX_ERROR;
+        return;
+    }
+    else if (errorCode != PUT_SUCCESS)
     {
         PRINTF("Error code %d\r\n", errorCode);
     }
-    else if((existNextMessage(destID, &nextMessage) == true) && (isMasterMode == true)) /* 노드의 RX 구간에서 전송 할 메시지가 있으면 */
-    {
-        sendMessage(nextMessage.payload, nextMessage.payloadSize);
-    }
-    else if(isMasterMode == true) /* 전송 할 메시지가 없으면 payload 없이 메시지 전송*/
-    {
-        //sendMessage(payload,size);
-        sendMessage(0,0);
-    }
-
     State = RX_DONE;
-
-    //PRINTF("OnRxDone\n\r");
-    //PRINTF("RssiValue=%d dBm, SnrValue=%d\n\r", rssi, snr);
 }
 
 void OnTxTimeout( void )
 {
     Radio.Sleep( );
     State = TX_TIMEOUT;
-
     PRINTF("OnTxTimeout\n\r");
 }
 

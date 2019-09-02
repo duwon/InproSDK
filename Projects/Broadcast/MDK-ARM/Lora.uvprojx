@@ -333,9 +333,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--C99</MiscControls>
-              <Define>STM32L072xx, USE_B_L072Z_LRWAN1,USE_HAL_DRIVER</Define>
+              <Define>STM32L072xx, USE_B_L072Z_LRWAN1,USE_HAL_DRIVER MASTER_MODE</Define>
               <Undefine></Undefine>
-              <IncludePath>..\inc;..\inc;..\..\..\Drivers\BSP\INPRO_LORAWAN;..\..\..\Drivers\BSP\CMWX1ZZABZ-0xx;..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc;..\..\..\Drivers\CMSIS\Device\ST\STM32L0xx\Include;..\..\..\Drivers\CMSIS\Include;..\..\..\Middlewares\Third_Party\LoRaWAN\Crypto;..\..\..\Middlewares\Third_Party\LoRaWAN\Mac;..\..\..\Middlewares\Third_Party\LoRaWAN\Phy;..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities;..\..\..\Drivers\BSP\X_NUCLEO_IKS01A1;..\..\..\Drivers\BSP\Components\Common;..\..\..\Drivers\BSP\Components\hts221;..\..\..\Drivers\BSP\Components\lps25hb;..\..\..\Drivers\BSP\Components\sx1276;..\..\..\Middlewares\Third_Party\LoRaWAN\Core;..\DW</IncludePath>
+              <IncludePath>..\inc;..\inc;..\..\..\Drivers\BSP\INPRO_LORAWAN;..\..\..\Drivers\BSP\CMWX1ZZABZ-0xx;..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc;..\..\..\Drivers\CMSIS\Device\ST\STM32L0xx\Include;..\..\..\Drivers\CMSIS\Include;..\..\..\Middlewares\Third_Party\LoRaWAN\Crypto;..\..\..\Middlewares\Third_Party\LoRaWAN\Mac;..\..\..\Middlewares\Third_Party\LoRaWAN\Phy;..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities;..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2;..\..\..\Drivers\BSP\Components\Common;..\..\..\Drivers\BSP\Components\hts221;..\..\..\Drivers\BSP\Components\lps25hb;..\..\..\Drivers\BSP\Components\sx1276;..\..\..\Middlewares\Third_Party\LoRaWAN\Core;..\DW;..\..\..\Drivers\BSP\Components\lps22hb</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -383,6 +383,41 @@
               <FileName>sx1276.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Drivers\BSP\Components\sx1276\sx1276.c</FilePath>
+            </File>
+            <File>
+              <FileName>x_nucleo_iks01a2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2.c</FilePath>
+            </File>
+            <File>
+              <FileName>x_nucleo_iks01a2_humidity.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2_humidity.c</FilePath>
+            </File>
+            <File>
+              <FileName>x_nucleo_iks01a2_temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2_temperature.c</FilePath>
+            </File>
+            <File>
+              <FileName>HTS221_Driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Drivers\BSP\Components\hts221\HTS221_Driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>HTS221_Driver_HL.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Drivers\BSP\Components\hts221\HTS221_Driver_HL.c</FilePath>
+            </File>
+            <File>
+              <FileName>LPS22HB_Driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Drivers\BSP\Components\lps22hb\LPS22HB_Driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>LPS22HB_Driver_HL.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Drivers\BSP\Components\lps22hb\LPS22HB_Driver_HL.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -599,6 +634,11 @@
               <FileType>1</FileType>
               <FilePath>..\src\mlm32l0xx_hw.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\bsp.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -613,6 +653,11 @@
               <FileName>PayloadMessage.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\DW\PayloadMessage.c</FilePath>
+            </File>
+            <File>
+              <FileName>LoraRadio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DW\LoraRadio.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -26,11 +26,6 @@ extern States_t State;
 
 static RadioEvents_t RadioEvents; /* Radio events function pointer */
 
-void OnTxDone( void ); /* brief Function to be executed on Radio Tx Done event */
-void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr ); /* brief Function to be executed on Radio Rx Done event */
-void OnTxTimeout( void ); /* brief Function executed on Radio Tx Timeout event */
-void OnRxTimeout( void ); /* brief Function executed on Radio Rx Timeout event */
-void OnRxError( void ); /* brief Function executed on Radio Rx Error event */
 void RadioInit(void);
 
 

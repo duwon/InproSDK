@@ -11,7 +11,8 @@
 #include "bsp.h"
 
 
-#define TX_INTERVAL_TIME                            20000
+#define TX_INTERVAL_TIME                            10000
+#define NUMBER_RETRANSMISSION                       1
 
 static  TimerEvent_t timerLed; /* Led Timers objects */
 static  TimerEvent_t timerTx; /* Tx Timers objects */
@@ -21,7 +22,12 @@ static void OnledEvent( void* context ); /* brief Function executed on when led 
 static void OnTxEvent( void* context );
 static void mainTimerInit(void);
 static void procLoraStage(void);
-static uint32_t createUID(void);
+static void createUID(void);
+
+static  TimerEvent_t timerTx1; /* Tx Timers objects */
+static  TimerEvent_t timerTx2; /* Tx Timers objects */
+static void OnTxEvetTest1(void* context);
+static void OnTxEvetTest2(void* context);
 
 int main( void )
 {
@@ -53,20 +59,6 @@ int main( void )
         {
             procPayloadData();
 
-
-#ifdef _DEBUG_
-            //Message Test   
-            uint8_t tempSrcID;
-            uint8_t tempRxBuffer[MESSAGE_MAX_PAYLOAD_SIZE] = {0,};
-            if(getMessagePayload((void*)&tempSrcID, tempRxBuffer) == SUCCESS)
-            {
-                if(tempRxBuffer[0] == MTYPE_TESTMESSAGE)
-                {
-                    PRINTF("ID : %d  T : %d\r\n",tempRxBuffer[1], tempRxBuffer[2]);
-                }
-            }
-#endif
-
             DISABLE_IRQ( );
             if (State == LOWPOWER) /* if an interupt has occured after __disable_irq, it is kept pending and cortex will not enter low power anyway */
             {
@@ -82,6 +74,8 @@ int main( void )
 
 static void procLoraStage(void)
 {
+    static uint8_t cntTxSent = 0;
+
     switch (State)
     {
     case RX_DONE:
@@ -108,6 +102,17 @@ static void procLoraStage(void)
         {
             Radio.Rx(RX_TIMEOUT_VALUE);
         }
+        else if(cntTxSent < NUMBER_RETRANSMISSION)              /* 재전송 */
+        {
+            cntTxSent++;
+            PRINTF("RESEND\r\n");
+            OnTxEvent(NULL);
+        }
+        else
+        {
+            cntTxSent = 0;
+        }
+        
 
         State = LOWPOWER;
         break;
@@ -129,6 +134,16 @@ static void mainTimerInit(void)
     TimerInit(&timerLed, OnledEvent);
     TimerSetValue(&timerLed, 1000);
     TimerStart(&timerLed);
+
+    /* Test Event 1*/
+    TimerInit(&timerTx1, OnTxEvetTest1);
+    TimerSetValue(&timerTx1, 6000);
+    TimerStart(&timerTx1);
+
+    /* Test Event 1*/
+    TimerInit(&timerTx2, OnTxEvetTest2);
+    TimerSetValue(&timerTx2, 9000);
+    TimerStart(&timerTx2);    
 #endif
 
     /* Tx Timers */
@@ -137,29 +152,52 @@ static void mainTimerInit(void)
     TimerStart(&timerTx);
 }
 
+static void OnTxEvetTest1(void *context)
+{
+    uint8_t tempTxData[3] = {0,};
+    static uint8_t cntTemp = 0;
+    tempTxData[0] = cntTemp++;
+    tempTxData[1] = rand();
+    tempTxData[2] = (uint8_t)(rand() % cntTemp);
+
+    sendPayloadData(MASTER_ID, MTYPE_TESTMESSAGE1, tempTxData);
+
+    TimerStart(&timerTx1);
+}
+
+static void OnTxEvetTest2(void *context)
+{
+    uint8_t tempTxData[13] = {0,};
+    static uint8_t cntTemp = 0;
+    tempTxData[0] = cntTemp++;
+    tempTxData[1] = rand();
+    tempTxData[12] = rand() % cntTemp;
+
+    sendPayloadData(MASTER_ID, MTYPE_TESTMESSAGE1, tempTxData);
+
+    TimerStart(&timerTx2);
+}
+
 static void OnledEvent(void *context)
 {
     //LED_Toggle( LED1 ) ;
     TimerStart(&timerLed);
 }
 
+/**
+  * @brief  온/습도 센서 정보를 주기적으로 송신
+  */
 static void OnTxEvent(void *context)
 {
-    if (BSP_PB_GetState(BUTTON_USER) == GPIO_PIN_RESET)
+    if ((BSP_PB_GetState(BUTTON_USER) == GPIO_PIN_RESET) || (isMasterMode == true)) /* 버튼으로 마스터 모드 설정하거나, 컴파일시 MASTER_MODE 선언 시 */
     {
         srcID = MASTER_ID;
         isMasterMode = true;
         PRINTF("key pressed. ID:%d \r\n", srcID);
         payloadTimerDeInit();
-    }
-
-    if (isMasterMode == true)
-    {
         TimerStop(&timerTx);
-    }
-    else
-    {
-        TimerStart(&timerTx);
+        Radio.Rx(RX_TIMEOUT_VALUE);
+        return;
     }
 
     sensor_t sensor_data;
@@ -170,20 +208,22 @@ static void OnTxEvent(void *context)
     memcpy((void *)&tempTxData[4], (void *)&sensor_data.humidity, 4);
 
     PRINTF("Temp : %.1f     Humi : %.1f   \r\n\r\n",sensor_data.temperature, sensor_data.humidity);
-    sendPayloadData(MTYPE_TEMP_HUMI, tempTxData);
+    sendPayloadData(MASTER_ID, MTYPE_TEMP_HUMI, tempTxData);
 
-
-
+    TimerStart(&timerTx);
 }
 
-static uint32_t createUID(void)
+/**
+  * @brief  온/습도 정보를 기준으로 랜덤 UID 생성
+  */
+static void createUID(void)
 {
     /* create random uid */
     sensor_t sensor_data;
     BSP_sensor_Read( &sensor_data );
     srand(sensor_data.temperature * sensor_data.humidity);
-    UID_radom = rand();
-    PRINTF("UID : %x\r\n", UID_radom);
-    InsertIDList(UID_radom);
+    UID_random = rand();
+    PRINTF("UID : %x\r\n", UID_random);
+    InsertIDList(UID_random);  
 }
 

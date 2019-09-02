@@ -10,11 +10,18 @@ messageFIFO_TypeDef rxMessageBuffer;
 
 uint8_t destID = MASTER_ID; /* 마스터 ID */
 uint8_t srcID = MAX_ID_LIST;/* 노드 ID */
+#ifdef MASTER_MODE
+bool isMasterMode = true;  /*  마스터 모드 플래그 */
+#else
 bool isMasterMode = false;  /* 마스터 모드 플래그 */
+#endif
 bool existGetID = false;    /* 새로 부여 받은 ID가 존재? */
-uint32_t UID_radom;         /* UID 랜덤값. 임시 사용. */
+uint32_t UID_random;         /* UID 랜덤값. 임시 사용. */
+IDList_TypeDef IDList;                      /* 노드 아이디 정보 구조체 */
 
 static uint8_t calChecksum(uint8_t *messageData, uint8_t messageSize);
+
+
 
 /**
   * @brief  Lora의 수신된 메시지 버퍼에서 Payload data만 분리
@@ -45,7 +52,7 @@ ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *rxData)
   * @param  dataLength: Payload 데이터 크기(byte)  
   * @retval None
   */
-void sendMessage(uint8_t *txData, uint8_t dataLength)
+void sendMessage(uint8_t _destID, uint8_t *txData, uint8_t dataLength)
 {
     if (dataLength > MESSAGE_MAX_PAYLOAD_SIZE)
     {
@@ -56,7 +63,7 @@ void sendMessage(uint8_t *txData, uint8_t dataLength)
     uint8_t txMessageSize = MESSAGE_HEADER_SIZE + dataLength;
     uint8_t txMessageBuff[txMessageSize];
 
-    txMessage.dest = destID;
+    txMessage.dest = _destID;
     txMessage.src = srcID;
     txMessage.payloadSize = dataLength;
     memcpy(txMessage.payload, txData, dataLength);
@@ -197,20 +204,144 @@ static uint8_t calChecksum(uint8_t *messageData, uint8_t messageSize)
 /**
   * @brief  메시지 수신 시 다음에 보낼 데이터가 있는지 확인
   * @param  _id: 메시지가 있는지 검색 할 Node ID
-  * @param  Message: 메시지 구조체 
+  * @param  Message: 리턴될 메시지 구조체 
   * @retval 해당 ID의 보낼 메시지가 있으면 true
   */
 bool existNextMessage(uint8_t _id, messagePacket_TypeDef *Message)
 {
-    for (int i = 0; i < MAX_ID_LIST; i++)
+    if (nextTxMessage[_id].dest == _id) /* 수신 측(NODE) ID */
     {
-        if (nextTxMessage[i].dest == _id)
-        {
-            memcpy((void *)&Message, (void *)&nextTxMessage[i], sizeof(nextTxMessage[i]));
-            memset((void *)&nextTxMessage[i], 0, sizeof(nextTxMessage[i]));
-            return true;
-        }
+        memcpy(Message, (void *)&nextTxMessage[_id], sizeof(nextTxMessage[_id]));
+        memset((void *)&nextTxMessage[_id], 0, sizeof(nextTxMessage[_id]));
+        return true;
+    }
+    else
+    {
     }
 
     return false;
+}
+
+/**
+  * @brief  메시지 수신 시 다음에 보낼 데이터를 저장
+  * @param  _destID: 메시지를 저장할 Node ID
+  * @param  txData: 저장할 메시지
+  * @param  dataLength: 저장할 메시지의 크기
+  * @retval 해당 ID의 보낼 메시지가 존재하면 false
+  */
+bool insertNextMessage(uint8_t _destID, uint8_t *txData, uint8_t dataLength)
+{
+    if (nextTxMessage[_destID].dest == 0) /* 값이 존재하지 않으면 */
+    {
+        uint8_t txMessageSize = MESSAGE_HEADER_SIZE + dataLength;
+
+        nextTxMessage[_destID].dest = _destID;
+        nextTxMessage[_destID].src = srcID;
+        nextTxMessage[_destID].payloadSize = dataLength;
+        memcpy(nextTxMessage[_destID].payload, txData, dataLength);
+        nextTxMessage[_destID].checksum = calChecksum((uint8_t *)&nextTxMessage[_destID], txMessageSize);
+        nextTxMessage[_destID].etx = MESSAGE_ETX;
+			
+        return true;
+    }
+    else
+    {
+    }
+    return false;
+}
+
+
+/**
+  * @brief  ID List에서 값을 찾아 배열의 해당 Index을 리턴
+  * @param  _type: 찾을 조건
+  *         @arg SEARCH_ID: ID 찾기
+            @arg SEARCH_UID: UID 찾기
+  * @retval 값이 위치한 배열의 Index. 찾는 값이 없으면 0.
+  */
+uint8_t getIDInfo(search_type _type, uint8_t *value)
+{
+    uint32_t searchUID =0;
+    if(_type == SEARCH_UID)
+    {
+        memcpy((void*)&searchUID, value, 4);
+        for(int i=1; i<IDList.count; i++)
+        {
+            if(IDList.idInfo[i].uid == searchUID )
+            {
+                PRINTF("UID index: %d\r\n", i);
+                return i;
+            }
+        }        
+    }
+    else
+    {
+        for(int i=1; i<IDList.count; i++)
+        {
+            if(IDList.idInfo[i].id == *value )
+            {
+                PRINTF("ID index: %d\r\n", i);
+                return i;
+            }
+        }
+    }
+
+    return 0;
+
+}
+
+/**
+  * @brief  ID List에 저장
+  * @param  _uid: UID 값
+  * @retval UID가 ID List에 없으면 ID와 UID을 저장하고 SUCESS리턴.
+  */
+ErrorStatus InsertIDList(uint32_t _uid)
+{
+    if (IDList.count >= MAX_ID_LIST)
+    {
+        return ERROR;
+    }
+    else if (getIDInfo(SEARCH_UID, (uint8_t *)&_uid) == 0)
+    {
+        uint8_t assignID = 0;
+
+        for (int i = 0; i < MAX_ID_LIST; i++)
+        {
+            if (IDList.idInfo[i].uid == 0)
+            {
+                assignID = i;
+                break;
+            }
+        }
+
+        IDList.idInfo[assignID].id = assignID;
+        IDList.idInfo[assignID].uid = _uid;
+        IDList.count++;
+
+        return SUCCESS;
+    }
+    else
+    {
+    }
+
+    return ERROR;
+}
+
+/**
+  * @brief  ID List에서 삭제
+  * @param  _uid: UID 값
+  * @retval ID가 있으면 삭제하고 SUCCESS 리턴.
+  */
+ErrorStatus DeleteIDList(uint8_t _id)
+{
+    uint8_t existID = getIDInfo(SEARCH_ID, (uint8_t *)&_id);
+    if (existID != 0)
+    {
+        memset((void *)&IDList.idInfo[existID], 0, sizeof(IDList.idInfo[existID]));
+        IDList.count--;
+        return SUCCESS;
+    }
+    else
+    {
+    }
+    return ERROR;
 }

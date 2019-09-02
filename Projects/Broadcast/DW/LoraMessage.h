@@ -54,24 +54,45 @@ typedef enum
     NOT_STX
 } messageError_TypeDef;
 
+typedef struct
+{
+    uint8_t id;
+    uint32_t uid;
+    uint32_t cntRequestID;
+} IDInfo_TypeDef;
+
+typedef struct
+{
+    uint8_t count;
+    IDInfo_TypeDef idInfo[MAX_ID_LIST];
+} IDList_TypeDef;
+
+typedef enum
+{
+    SEARCH_ID = 0,
+    SEARCH_UID
+} search_type;
 
 extern bool isMasterMode;
 extern bool existGetID;
-extern messageFIFO_TypeDef rxMessageBuffer;;
+extern messageFIFO_TypeDef rxMessageBuffer;
 extern uint8_t srcID;
 extern uint8_t destID;
-extern uint32_t UID_radom;
+extern uint32_t UID_random;
+extern IDList_TypeDef IDList;
 
 void initMessage(void);
 ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *rxData);
-void sendMessage(uint8_t *txData, uint8_t dataLength);
+void sendMessage(uint8_t _destID, uint8_t *txData, uint8_t dataLength);
 messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size,  int16_t rssi, int8_t snr);
 ErrorStatus getMessageBuffer(volatile messageFIFO_TypeDef *buffer, messagePacket_TypeDef *data);
+
 bool existNextMessage(uint8_t _id, messagePacket_TypeDef *nextMessage);
+bool insertNextMessage(uint8_t _destID, uint8_t *txData, uint8_t dataLength);
 
-
-
-
+ErrorStatus InsertIDList(uint32_t _uid);
+ErrorStatus DeleteIDList(uint8_t _id);
+uint8_t getIDInfo(search_type _type, uint8_t *value);
 
 
 
