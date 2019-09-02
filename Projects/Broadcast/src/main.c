@@ -102,7 +102,7 @@ static void procLoraStage(void)
         {
             Radio.Rx(RX_TIMEOUT_VALUE);
         }
-        else if(cntTxSent < NUMBER_RETRANSMISSION)              /* 재전송 */
+        else if(cntTxSent < NUMBER_RETRANSMISSION)              /* Node 모드에서 재전송 */
         {
             cntTxSent++;
             PRINTF("RESEND\r\n");
@@ -167,13 +167,13 @@ static void OnTxEvetTest1(void *context)
 
 static void OnTxEvetTest2(void *context)
 {
-    uint8_t tempTxData[13] = {0,};
+    uint8_t tempTxData[24] = {0,};
     static uint8_t cntTemp = 0;
     tempTxData[0] = cntTemp++;
     tempTxData[1] = rand();
-    tempTxData[12] = rand() % cntTemp;
+    tempTxData[23] = rand() % cntTemp;
 
-    sendPayloadData(MASTER_ID, MTYPE_TESTMESSAGE1, tempTxData);
+    sendPayloadData(MASTER_ID, MTYPE_TESTMESSAGE2, tempTxData);
 
     TimerStart(&timerTx2);
 }
@@ -207,7 +207,8 @@ static void OnTxEvent(void *context)
     memcpy((void *)&tempTxData[0], (void *)&sensor_data.temperature, 4);
     memcpy((void *)&tempTxData[4], (void *)&sensor_data.humidity, 4);
 
-    PRINTF("Temp : %.1f     Humi : %.1f   \r\n\r\n",sensor_data.temperature, sensor_data.humidity);
+    PRINTF("%d [INFO] ", HW_RTC_GetTimerValue());
+    PRINTF("Temp : %.1f     Humi : %.1f   \r\n",sensor_data.temperature, sensor_data.humidity);
     sendPayloadData(MASTER_ID, MTYPE_TEMP_HUMI, tempTxData);
 
     TimerStart(&timerTx);

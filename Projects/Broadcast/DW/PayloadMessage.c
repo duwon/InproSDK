@@ -124,7 +124,6 @@ void procPayloadData(void)
     }
 }
 
-
 /**
   * @brief  마스터모드의 Payload 데이터 처리 함수.
   * @param  None 
@@ -136,22 +135,30 @@ void procMasterMode(void)
     float humidity = 0;
     uint8_t tempSrcID;
     payloadPacket_TypeDef tempRxPayloadBuffer;
-    messagePacket_TypeDef nextMessage;    
+    messagePacket_TypeDef nextMessage;
 
     if (getMessagePayload((void *)&tempSrcID, (uint8_t *)&tempRxPayloadBuffer) == SUCCESS)
     {
-   
-        if ((existNextMessage(tempSrcID, &nextMessage) == true) && (isMasterMode == true)) /* 노드의 RX 구간에서 전송 할 메시지가 있으면 */
+        /* ACK */
+        if ((existNextMessage(tempSrcID, &nextMessage) == true) && (isMasterMode == true)) /* 노드의 RX 구간에서 전송 할 메시지가 있으면 노드의 RX 구간에 전송*/
         {
             sendMessage(tempSrcID, nextMessage.payload, nextMessage.payloadSize);
         }
-        else if ((tempRxPayloadBuffer.msgID != MTYPE_REQUEST_ID) && (isMasterMode == true)) /* 전송 할 메시지가 없으면 payload 없이 메시지 전송*/
+        else if ((tempRxPayloadBuffer.msgID != MTYPE_REQUEST_ID) && (isMasterMode == true)) /* 전송 할 메시지가 없으면 payload 없이 메시지 전송. ACK 응답*/
         {
             sendMessage(tempSrcID, 0, 0);
         }
 
+        /* ID 재구성 */
+        if(getIDInfo(SEARCH_ID, (void *)&tempSrcID) == 0) /* ID가 존재하지 않으면 다음 RX 구간에서 UID 요청 */
+        {
+            uint8_t txBuffer[2] = {MTYPE_REQUEST_UID, 2};
+            insertNextMessage(tempSrcID, txBuffer,  txBuffer[1]);
+        }
+
+        /* Payload 처리 */
         uint32_t tempUID = 0;
-        switch (tempRxPayloadBuffer.msgID)  /* Payload 메시지 ID 판단 */
+        switch (tempRxPayloadBuffer.msgID) /* Payload 메시지 ID 판단 */
         {
         case MTYPE_REQUEST_ID:
 
@@ -172,16 +179,16 @@ void procMasterMode(void)
 #endif
             break;
         case MTYPE_TEMP_HUMI:
-                memcpy( (void *)&temperature,(void *)&tempRxPayloadBuffer.data[0], 4);
-                memcpy( (void *)&humidity, (void *)&tempRxPayloadBuffer.data[4],4);
+            memcpy((void *)&temperature, (void *)&tempRxPayloadBuffer.data[0], 4);
+            memcpy((void *)&humidity, (void *)&tempRxPayloadBuffer.data[4], 4);
 
-                PRINTF("SRC ID : %d, Temp: %.1f, Humi: %.f \r\n",tempSrcID, temperature, humidity);
+            PRINTF("SRC ID : %d, Temp: %.1f, Humi: %.f \r\n", tempSrcID, temperature, humidity);
 
             break;
         case ERROR:
             break;
         default:
             break;
-        }     
+        }
     }
 }

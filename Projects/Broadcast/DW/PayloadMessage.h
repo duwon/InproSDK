@@ -9,12 +9,14 @@ extern "C" {
 #include "stm32l0xx_hal.h"
 #include "LoraMessage.h"
 
-#define TOTAL_MSGID_CNT                 5
+#define TOTAL_MSGID_CNT                 6
 
 #define MTYPE_TESTMESSAGE1              0xFF
 #define MTYPE_TESTMESSAGE2              0xFE
-#define MTYPE_REQUEST_ID                0xA0
-#define MTYPE_RESPONSE_ID               0xA1        /* get ID from Master */
+#define MTYPE_REQUEST_ID                0xA0        /* Node -> Master */
+#define MTYPE_RESPONSE_ID               0xA1        /* Master - > Node get ID from Master */
+#define MTYPE_REQUEST_UID               0xA2        /* Master ->  Node */
+#define MTYPE_RESPONSE_UID              0xA3        /* Node -> Master */
 #define MTYPE_TEMP_HUMI                 0xC0
 
 
@@ -42,9 +44,10 @@ void OnBootingEvent( void* context );
 static const uint8_t msgIDLength[TOTAL_MSGID_CNT][2] =
 {
     {MTYPE_TESTMESSAGE1, 3},
-    {MTYPE_TESTMESSAGE2, 12},
+    {MTYPE_TESTMESSAGE2, 24},
     {MTYPE_REQUEST_ID, 4},
     {MTYPE_RESPONSE_ID, 1},
+    {MTYPE_REQUEST_UID, 0},
     {MTYPE_TEMP_HUMI, 8}
 };
 

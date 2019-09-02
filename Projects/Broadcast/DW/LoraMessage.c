@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <hw_rtc.h>
 #include "LoraRadio.h"
 #include "LoraMessage.h"
 #include "util_console.h"
@@ -75,6 +76,7 @@ void sendMessage(uint8_t _destID, uint8_t *txData, uint8_t dataLength)
     txMessageBuff[txMessageSize - 1] = MESSAGE_ETX;
 
     Radio.Send(txMessageBuff, txMessageSize);
+    PRINTF("%d [TX] ", HW_RTC_GetTimerValue());
     for (int i = 0; i < txMessageSize; i++)
         PRINTF("%x ", txMessageBuff[i]);
     //PRINTF("\r\n");
@@ -154,6 +156,7 @@ messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint
     }
 
 #ifdef _DEBUG_
+    PRINTF("%d [RX] ", HW_RTC_GetTimerValue());
     for(int i=0; i<size; i++)
         PRINTF("%x ", data[i]);
     PRINTF("      %d byte    ",size);
@@ -209,6 +212,10 @@ static uint8_t calChecksum(uint8_t *messageData, uint8_t messageSize)
   */
 bool existNextMessage(uint8_t _id, messagePacket_TypeDef *Message)
 {
+    if(_id >= MAX_ID_LIST)
+    {
+        return false;
+    }
     if (nextTxMessage[_id].dest == _id) /* 수신 측(NODE) ID */
     {
         memcpy(Message, (void *)&nextTxMessage[_id], sizeof(nextTxMessage[_id]));
@@ -225,7 +232,7 @@ bool existNextMessage(uint8_t _id, messagePacket_TypeDef *Message)
 /**
   * @brief  메시지 수신 시 다음에 보낼 데이터를 저장
   * @param  _destID: 메시지를 저장할 Node ID
-  * @param  txData: 저장할 메시지
+  * @param  txData: 저장할 메시지 (Payload Data)
   * @param  dataLength: 저장할 메시지의 크기
   * @retval 해당 ID의 보낼 메시지가 존재하면 false
   */
