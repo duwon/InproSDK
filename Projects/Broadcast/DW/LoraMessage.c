@@ -16,8 +16,7 @@ bool isMasterMode = true;  /*  마스터 모드 플래그 */
 #else
 bool isMasterMode = false;  /* 마스터 모드 플래그 */
 #endif
-bool existGetID = false;    /* 새로 부여 받은 ID가 존재? */
-uint32_t UID_random;         /* UID 랜덤값. 임시 사용. */
+
 IDList_TypeDef IDList;                      /* 노드 아이디 정보 구조체 */
 
 static uint8_t calChecksum(uint8_t *messageData, uint8_t messageSize);
@@ -69,17 +68,19 @@ void sendMessage(uint8_t _destID, uint8_t *txData, uint8_t dataLength)
     txMessage.payloadSize = dataLength;
     memcpy(txMessage.payload, txData, dataLength);
     txMessage.checksum = calChecksum((uint8_t *)&txMessage, txMessageSize); /* 송신 메시지 구조체 정보 완성 */
-    //PRINTF("PAYLOAD : %X %X %X\r\n",txMessage.payload[0],txMessage.payload[1],txMessage.payload[2]);
+
     memcpy(txMessageBuff, (void *)&txMessage, txMessageSize);  /* 송신 메시지 크기가 가변임으로 구조체의 체크섬과 ETX는 잘려서 복사됨 */
 
     txMessageBuff[txMessageSize - 2] = txMessage.checksum;
     txMessageBuff[txMessageSize - 1] = MESSAGE_ETX;
 
     Radio.Send(txMessageBuff, txMessageSize);
+#ifdef _DEBUG_    
     PRINTF("%d [TX] ", HW_RTC_GetTimerValue());
     for (int i = 0; i < txMessageSize; i++)
         PRINTF("%x ", txMessageBuff[i]);
-    //PRINTF("\r\n");
+    PRINTF("\r\n");
+#endif
 }
 
 void initMessage(void)
@@ -267,47 +268,57 @@ bool insertNextMessage(uint8_t _destID, uint8_t *txData, uint8_t dataLength)
   */
 uint8_t getIDInfo(search_type _type, uint8_t *value)
 {
-    uint32_t searchUID =0;
-    if(_type == SEARCH_UID)
+    uint32_t searchUID = 0;
+    if (_type == SEARCH_UID)
     {
-        memcpy((void*)&searchUID, value, 4);
-        for(int i=1; i<IDList.count; i++)
+        memcpy((void *)&searchUID, value, 4);
+        for (int i = 1; i < MAX_ID_LIST; i++)
         {
-            if(IDList.idInfo[i].uid == searchUID )
+            if (IDList.idInfo[i].uid == searchUID)
             {
-                PRINTF("UID index: %d\r\n", i);
+                //PRINTF("UID index: %d\r\n", i);
                 return i;
             }
-        }        
+        }
     }
     else
     {
-        for(int i=1; i<IDList.count; i++)
+        for (int i = 1; i < MAX_ID_LIST; i++)
         {
-            if(IDList.idInfo[i].id == *value )
+            if (IDList.idInfo[i].id == *value)
             {
-                PRINTF("ID index: %d\r\n", i);
+                //PRINTF("ID index: %d\r\n", i);
                 return i;
             }
         }
     }
 
     return 0;
-
 }
 
 /**
   * @brief  ID List에 저장
+  * @param  _id: ID 값, ID 값이 0이면 ID 자동 부여
   * @param  _uid: UID 값
   * @retval UID가 ID List에 없으면 ID와 UID을 저장하고 SUCESS리턴.
   */
-ErrorStatus InsertIDList(uint32_t _uid)
+ErrorStatus InsertIDList(uint8_t _id, uint32_t _uid)
 {
+    uint8_t UIDExist = getIDInfo(SEARCH_UID, (uint8_t *)&_uid);
     if (IDList.count >= MAX_ID_LIST)
     {
         return ERROR;
     }
-    else if (getIDInfo(SEARCH_UID, (uint8_t *)&_uid) == 0)
+    else if ((_id != 0) && (UIDExist == 0))
+    {
+        if(IDList.idInfo[_id].id == 0)
+        IDList.idInfo[_id].id = _id;
+        IDList.idInfo[_id].uid = _uid;
+        IDList.count++;
+
+        return SUCCESS;
+    }
+    else if (UIDExist == 0)
     {
         uint8_t assignID = 0;
 

@@ -9,16 +9,16 @@ extern "C" {
 #include "stm32l0xx_hal.h"
 #include "LoraMessage.h"
 
-#define TOTAL_MSGID_CNT                 6
+#define TOTAL_MSGID_CNT                 7
 
 #define MTYPE_TESTMESSAGE1              0xFF
 #define MTYPE_TESTMESSAGE2              0xFE
-#define MTYPE_REQUEST_ID                0xA0        /* Node -> Master */
-#define MTYPE_RESPONSE_ID               0xA1        /* Master - > Node get ID from Master */
-#define MTYPE_REQUEST_UID               0xA2        /* Master ->  Node */
-#define MTYPE_RESPONSE_UID              0xA3        /* Node -> Master */
-#define MTYPE_TEMP_HUMI                 0xC0
-
+#define MTYPE_REQUEST_ID                0xA0        /* Node -> Master ID 요청 */
+#define MTYPE_RESPONSE_ID               0xA1        /* Master - > Node ID 정보 송신 */
+#define MTYPE_REQUEST_UID               0xB1        /* Master ->  Node UID 정보 요청 */
+#define MTYPE_RESPONSE_UID              0xB2        /* Node -> Master UID 정보 응답 */
+#define MTYPE_TEMP_HUMI                 0xC0        /* Node -> Master 온/습도 정보 송신 */
+#define MTYPE_CONTROL_DEBUGTIMER        0XFC        /* 테스트용 */
 
 
 
@@ -48,6 +48,7 @@ static const uint8_t msgIDLength[TOTAL_MSGID_CNT][2] =
     {MTYPE_REQUEST_ID, 4},
     {MTYPE_RESPONSE_ID, 1},
     {MTYPE_REQUEST_UID, 0},
+    {MTYPE_RESPONSE_UID, 4},
     {MTYPE_TEMP_HUMI, 8}
 };
 

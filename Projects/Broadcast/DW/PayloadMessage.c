@@ -10,10 +10,11 @@
 
 
 static  TimerEvent_t timerBooting;          /* 부팅시 ID 받는 타이머. ID 받으면 종료 */
+static  TimerEvent_t timerBooting;          /* 부팅시 ID 받는 타이머. ID 받으면 종료 */
 
-
-static uint8_t getPayloadLength(uint8_t msgID);
-static void OnBootingEvent( void* context );
+static uint8_t getPayloadLength(uint8_t msgID); /* msgID의 data 길이 반환 */
+static void OnBootingEvent(void *context);      /* ID 부여 받는 이벤트 */
+static void OnDebugTestEvent(void *context);    /* 시험용 이벤트 */
 
 /**
   * @brief  payload data 송신
@@ -72,37 +73,27 @@ void payloadTimerDeInit(void)
   */
 void OnBootingEvent(void *context)
 {
-    //static uint8_t numberTimesSent = 0;
-
-    uint8_t tempSrc;
-    payloadPacket_TypeDef tempRxPayloadBuffer;
-    if (getMessagePayload((void *)&tempSrc, (uint8_t *)&tempRxPayloadBuffer) == SUCCESS)
+    uint32_t tempUID = UID;
+    if(isMasterMode == true)
     {
-        PRINTF("msg type: %X, length: %x, ID: %x \r\n",tempRxPayloadBuffer.msgID,tempRxPayloadBuffer.length,tempRxPayloadBuffer.data[0]);
-        if (tempRxPayloadBuffer.msgID == MTYPE_RESPONSE_ID)
-        {
-            srcID = tempRxPayloadBuffer.data[0];
-            TimerStop(&timerBooting);
-            existGetID = true;
-            return;
-        }
-        else
-        {
-        }
-    }
-    else
-    {
+        srcID = MASTER_ID;
+        TimerStop(&timerBooting);
+        
+        sendPayloadData(0, 0, 0);
+        return;
     }
 
     srcID = (rand() % (0xFF - 0x30)) + 0x30;
-
-    //numberTimesSent++;
-    sendPayloadData(MASTER_ID, MTYPE_REQUEST_ID, (void *)&UID_random);
+    sendPayloadData(MASTER_ID, MTYPE_REQUEST_ID, (uint8_t *)&tempUID);
 
     TimerSetValue(&timerBooting, (rand() % 30000) + BOOTING_INTERVAL_TIME);
     TimerStart(&timerBooting);
 }
 
+static void OnDebugTestEvent(void *context)
+{
+
+}
 /**
   * @brief  Payload 데이터 처리 함수.
   * @param  None 
@@ -110,14 +101,21 @@ void OnBootingEvent(void *context)
   */
 void procPayloadData(void)
 {
-    uint8_t tempSrcID;
-    payloadPacket_TypeDef tempRxPayloadBuffer;
-    if (getMessagePayload((void *)&tempSrcID, (uint8_t *)&tempRxPayloadBuffer) == SUCCESS)
+    uint8_t rxSrcID;
+    uint32_t tempUID = UID;
+    payloadPacket_TypeDef rxPayload;
+    if (getMessagePayload((void *)&rxSrcID, (uint8_t *)&rxPayload) == SUCCESS)
     {
-        switch (tempRxPayloadBuffer.msgID)
+        switch (rxPayload.msgID)
         {
-        case ERROR:
+        case MTYPE_REQUEST_UID: /* UID 요청이면 */
+            sendPayloadData(MASTER_ID, MTYPE_RESPONSE_UID, (uint8_t *)&tempUID);
             break;
+        case MTYPE_RESPONSE_ID: /* ID가 부여되면 */
+            srcID = rxPayload.data[0];
+            TimerStop(&timerBooting);
+            break;
+
         default:
             break;
         }
@@ -133,56 +131,52 @@ void procMasterMode(void)
 {
     float temperature = 0;
     float humidity = 0;
-    uint8_t tempSrcID;
-    payloadPacket_TypeDef tempRxPayloadBuffer;
+    uint8_t rxSrcID;
+    payloadPacket_TypeDef rxPayload;
     messagePacket_TypeDef nextMessage;
 
-    if (getMessagePayload((void *)&tempSrcID, (uint8_t *)&tempRxPayloadBuffer) == SUCCESS)
+    if (getMessagePayload((void *)&rxSrcID, (uint8_t *)&rxPayload) == SUCCESS)
     {
         /* ACK */
-        if ((existNextMessage(tempSrcID, &nextMessage) == true) && (isMasterMode == true)) /* 노드의 RX 구간에서 전송 할 메시지가 있으면 노드의 RX 구간에 전송*/
+        if ((existNextMessage(rxSrcID, &nextMessage) == true) && (isMasterMode == true)) /* 노드의 RX 구간에서 전송 할 메시지가 있으면 메시지 전송 */
         {
-            sendMessage(tempSrcID, nextMessage.payload, nextMessage.payloadSize);
+            sendMessage(rxSrcID, nextMessage.payload, nextMessage.payloadSize);
         }
-        else if ((tempRxPayloadBuffer.msgID != MTYPE_REQUEST_ID) && (isMasterMode == true)) /* 전송 할 메시지가 없으면 payload 없이 메시지 전송. ACK 응답*/
+        else if ((rxPayload.msgID != MTYPE_REQUEST_ID) && (isMasterMode == true)) /* 전송 할 메시지가 없으면 payload 없이 메시지 전송. ACK 응답 */
         {
-            sendMessage(tempSrcID, 0, 0);
-        }
-
-        /* ID 재구성 */
-        if(getIDInfo(SEARCH_ID, (void *)&tempSrcID) == 0) /* ID가 존재하지 않으면 다음 RX 구간에서 UID 요청 */
-        {
-            uint8_t txBuffer[2] = {MTYPE_REQUEST_UID, 2};
-            insertNextMessage(tempSrcID, txBuffer,  txBuffer[1]);
+            sendMessage(rxSrcID, 0, 0);
         }
 
         /* Payload 처리 */
         uint32_t tempUID = 0;
-        switch (tempRxPayloadBuffer.msgID) /* Payload 메시지 ID 판단 */
+        switch (rxPayload.msgID) /* Payload 메시지 ID 판단 */
         {
-        case MTYPE_REQUEST_ID:
+        case MTYPE_REQUEST_ID: /* Node에 ID 부여 */
 
-            memcpy((void *)&tempUID, tempRxPayloadBuffer.data, 4);
-            if (InsertIDList(tempUID) != SUCCESS)
+            memcpy((void *)&tempUID, rxPayload.data, 4);
+            if (InsertIDList(0, tempUID) != SUCCESS)
             {
             }
 
             uint8_t tempTxData;
             tempTxData = getIDInfo(SEARCH_UID, (uint8_t *)&tempUID);
-            sendPayloadData(tempSrcID, MTYPE_RESPONSE_ID, (void *)&tempTxData);
+            sendPayloadData(rxSrcID, MTYPE_RESPONSE_ID, (void *)&tempTxData);
             PRINTF("tempTxData : %x\r\n", tempTxData);
-
-#ifdef _DEBUG_
-            for (int i = 0; i < IDList.count; i++)
-                PRINTF("\r\n ID : %d, UID : %x\r\n", IDList.idInfo[i].id, IDList.idInfo[i].uid);
-
-#endif
+            break;
+        case MTYPE_RESPONSE_UID: /* Node의 UID 저장 */
+            memcpy((void *)&tempUID, rxPayload.data, 4);
+            if( getIDInfo(SEARCH_UID, (uint8_t *)&tempUID) == 0)
+            {
+                if (InsertIDList(rxSrcID, tempUID) != SUCCESS)
+                {
+                }
+            }
             break;
         case MTYPE_TEMP_HUMI:
-            memcpy((void *)&temperature, (void *)&tempRxPayloadBuffer.data[0], 4);
-            memcpy((void *)&humidity, (void *)&tempRxPayloadBuffer.data[4], 4);
+            memcpy((void *)&temperature, (void *)&rxPayload.data[0], 4);
+            memcpy((void *)&humidity, (void *)&rxPayload.data[4], 4);
 
-            PRINTF("SRC ID : %d, Temp: %.1f, Humi: %.f \r\n", tempSrcID, temperature, humidity);
+            PRINTF("SRC ID : %d, Temp: %.1f, Humi: %.f \r\n", rxSrcID, temperature, humidity);
 
             break;
         case ERROR:
@@ -190,5 +184,22 @@ void procMasterMode(void)
         default:
             break;
         }
+
+        /* ID 재구성 */
+        if(getIDInfo(SEARCH_ID, (void *)&rxSrcID) == 0) /* ID가 존재하지 않으면 다음 RX 구간에서 UID 요청 */
+        {
+            uint8_t txBuffer[2] = {MTYPE_REQUEST_UID, 2};
+            insertNextMessage(rxSrcID, txBuffer,  txBuffer[1]);
+        }
+
+
+#ifdef _DEBUG_
+        if( (rxPayload.msgID == MTYPE_REQUEST_ID) || (rxPayload.msgID == MTYPE_RESPONSE_UID) )
+        {
+            PRINTF("\r\n");
+            for (int i = 0; i < IDList.count; i++)
+                PRINTF("ID : %d, UID : %x\r\n", IDList.idInfo[i].id, IDList.idInfo[i].uid);
+        }
+#endif        
     }
 }

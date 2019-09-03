@@ -8,7 +8,10 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l0xx_hal.h"
 #include <stdbool.h>
-    
+
+#define         UID1                                 ( 0x1FF80050 )
+#define         UID2                                 ( 0x1FF80054 )
+#define         UID3                                 ( 0x1FF80064 )   
     
 #define MESSAGE_BUFFER_SIZE         10          /* 메시지 버퍼 크기 */
 #define MESSAGE_HEADER_SIZE         8
@@ -18,7 +21,7 @@ extern "C" {
 #define MESSAGE_ETX                 0x04
 
 #define MASTER_ID                   0
-#define UID                         *(__IO uint32_t *)(UID_BASE)
+#define UID                         (uint32_t)( ( *( uint32_t* )UID1 ) ^ ( *( uint32_t* )UID2 ) ^ ( *( uint32_t* )UID3 ) )
 
 #define MAX_ID_LIST                 50
 
@@ -74,11 +77,10 @@ typedef enum
 } search_type;
 
 extern bool isMasterMode;
-extern bool existGetID;
 extern messageFIFO_TypeDef rxMessageBuffer;
 extern uint8_t srcID;
 extern uint8_t destID;
-extern uint32_t UID_random;
+
 extern IDList_TypeDef IDList;
 
 void initMessage(void);
@@ -90,7 +92,7 @@ ErrorStatus getMessageBuffer(volatile messageFIFO_TypeDef *buffer, messagePacket
 bool existNextMessage(uint8_t _id, messagePacket_TypeDef *nextMessage);
 bool insertNextMessage(uint8_t _destID, uint8_t *txData, uint8_t dataLength);
 
-ErrorStatus InsertIDList(uint32_t _uid);
+ErrorStatus InsertIDList(uint8_t _id, uint32_t _uid);
 ErrorStatus DeleteIDList(uint8_t _id);
 uint8_t getIDInfo(search_type _type, uint8_t *value);
 

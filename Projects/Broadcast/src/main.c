@@ -22,7 +22,6 @@ static void OnledEvent( void* context ); /* brief Function executed on when led 
 static void OnTxEvent( void* context );
 static void mainTimerInit(void);
 static void procLoraStage(void);
-static void createUID(void);
 
 static  TimerEvent_t timerTx1; /* Tx Timers objects */
 static  TimerEvent_t timerTx2; /* Tx Timers objects */
@@ -43,9 +42,10 @@ int main( void )
 
     RadioInit();
 
-    initMessage();    
-    createUID();
-
+    initMessage();
+  
+    PRINTF("\r\n\r\n\r\nSTART %s..... UID : 0x%x\r\n\r\n", isMasterMode ? "MASTER" : "NODE", UID);
+    InsertIDList(0, UID); 
 
     while( 1 )
     {
@@ -55,7 +55,7 @@ int main( void )
         {
             procMasterMode();
         }
-        else if(existGetID == true)
+        else
         {
             procPayloadData();
 
@@ -154,11 +154,17 @@ static void mainTimerInit(void)
 
 static void OnTxEvetTest1(void *context)
 {
+    if(isMasterMode == true)
+    {
+        TimerStop(&timerTx1);
+        return;
+    }
+
     uint8_t tempTxData[3] = {0,};
     static uint8_t cntTemp = 0;
-    tempTxData[0] = cntTemp++;
-    tempTxData[1] = rand();
-    tempTxData[2] = (uint8_t)(rand() % cntTemp);
+    tempTxData[0] = 0xC1;
+    tempTxData[1] = cntTemp++;
+    tempTxData[2] = rand();;
 
     sendPayloadData(MASTER_ID, MTYPE_TESTMESSAGE1, tempTxData);
 
@@ -167,11 +173,17 @@ static void OnTxEvetTest1(void *context)
 
 static void OnTxEvetTest2(void *context)
 {
+    if(isMasterMode == true)
+    {
+        TimerStop(&timerTx2);
+        return;
+    }
+
     uint8_t tempTxData[24] = {0,};
     static uint8_t cntTemp = 0;
-    tempTxData[0] = cntTemp++;
-    tempTxData[1] = rand();
-    tempTxData[23] = rand() % cntTemp;
+    tempTxData[0] = 0xC2;
+    tempTxData[1] = cntTemp++;
+    tempTxData[23] = rand();;
 
     sendPayloadData(MASTER_ID, MTYPE_TESTMESSAGE2, tempTxData);
 
@@ -189,14 +201,18 @@ static void OnledEvent(void *context)
   */
 static void OnTxEvent(void *context)
 {
-    if ((BSP_PB_GetState(BUTTON_USER) == GPIO_PIN_RESET) || (isMasterMode == true)) /* 버튼으로 마스터 모드 설정하거나, 컴파일시 MASTER_MODE 선언 시 */
+    if (BSP_PB_GetState(BUTTON_USER) == GPIO_PIN_RESET) /* 버튼으로 마스터 모드 설정하거나, 컴파일시 MASTER_MODE 선언 시 */
     {
         srcID = MASTER_ID;
         isMasterMode = true;
         PRINTF("key pressed. ID:%d \r\n", srcID);
-        payloadTimerDeInit();
         TimerStop(&timerTx);
         Radio.Rx(RX_TIMEOUT_VALUE);
+        return;
+    }
+    else if(isMasterMode == true)
+    {
+        TimerStop(&timerTx);
         return;
     }
 
@@ -213,18 +229,3 @@ static void OnTxEvent(void *context)
 
     TimerStart(&timerTx);
 }
-
-/**
-  * @brief  온/습도 정보를 기준으로 랜덤 UID 생성
-  */
-static void createUID(void)
-{
-    /* create random uid */
-    sensor_t sensor_data;
-    BSP_sensor_Read( &sensor_data );
-    srand(sensor_data.temperature * sensor_data.humidity);
-    UID_random = rand();
-    PRINTF("UID : %x\r\n", UID_random);
-    InsertIDList(UID_random);  
-}
-

@@ -28,7 +28,7 @@ void OnTxDone( void )
 {
     Radio.Sleep( );
     State = TX_DONE;
-    PRINTF("        OnTxDone\n\r");
+//    PRINTF("        OnTxDone\n\r");
 }
 
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
@@ -43,7 +43,7 @@ void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
     }
     else if (errorCode != PUT_SUCCESS)
     {
-        PRINTF("Error code %d\r\n", errorCode);
+        PRINTF("Message Error Code %d\r\n", errorCode);
     }
     State = RX_DONE;
 }
@@ -52,21 +52,27 @@ void OnTxTimeout( void )
 {
     Radio.Sleep( );
     State = TX_TIMEOUT;
+#ifdef _DEBUG_
     PRINTF("OnTxTimeout\n\r");
+#endif
 }
 
 void OnRxTimeout( void )
 {
     Radio.Sleep( );
     State = RX_TIMEOUT;
+#ifdef _DEBUG_    
     PRINTF("OnRxTimeout\n\r");
+#endif
 }
 
 void OnRxError( void )
 {
     Radio.Sleep( );
     State = RX_ERROR;
+#ifdef _DEBUG_
     PRINTF("OnRxError\n\r");
+#endif
 }
 
 void RadioInit(void)
