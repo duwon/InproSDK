@@ -15,18 +15,17 @@
 #define NUMBER_RETRANSMISSION                       1
 
 static  TimerEvent_t timerLed; /* Led Timers objects */
-static  TimerEvent_t timerTx; /* Tx Timers objects */
+//static  TimerEvent_t timerTx; /* Tx Timers objects */
 
 /* Private function prototypes -----------------------------------------------*/
 static void OnledEvent( void* context ); /* brief Function executed on when led timer elapses */
-static void OnTxEvent( void* context );
-static void mainTimerInit(void);
+//static void OnTxEvent( void* context );
 static void procLoraStage(void);
 
-static  TimerEvent_t timerTx1; /* Tx Timers objects */
-static  TimerEvent_t timerTx2; /* Tx Timers objects */
-static void OnTxEvetTest1(void* context);
-static void OnTxEvetTest2(void* context);
+//static  TimerEvent_t timerTx1; /* Tx Timers objects */
+//static  TimerEvent_t timerTx2; /* Tx Timers objects */
+//static void OnTxEvetTest1(void* context);
+//static void OnTxEvetTest2(void* context);
 
 int main( void )
 {
@@ -42,70 +41,58 @@ int main( void )
     Message_Init();
   
 #ifdef _DEBUG_
-    /* Led Timers */
+    PRINTF("\r\n\r\n\r\nSTART MASTER..... UID : 0x");
+    for(int i=0; i<8; i++)
+        PRINTF("%X ",UID[i]);
+    PRINTF("   Master ID : 0x%x\r\n\r\n", MASTER_ID);
+	
+		/* Led Timers */
     TimerInit(&timerLed, OnledEvent);
     TimerSetValue(&timerLed, 1000);
     OnledEvent(&timerLed);
-    PRINTF("\r\n\r\n\r\nSTART MASTER..... UID : 0x%x   Master ID : 0x%x\r\n\r\n",UID, MASTER_ID);
 #endif
 
-    InsertIDList(0, UID); 
+    InsertIDList(0, 0); 
     pyaloadTimerInit();
-
+	Radio_Rx();
+	
     while( 1 )
     {
         procLoraStage();  
-        procPayloadMessage();
+        procPayloadData();
     }
 }
 
 static void procLoraStage(void)
 {
-    static uint8_t cntTxSent = 0;
 
-    switch (State)
+    switch (LoraState)
     {
     case RX_DONE:
-        if (isMasterMode == true)
-        {
-            Radio.Rx(RX_TIMEOUT_VALUE);
-        }
+
+        Radio_Rx();
+        
 
 #ifdef _DEBUG_
         LED_Toggle(LED1);
 #endif
-        State = LOWPOWER;
+        LoraState = LOWPOWER;
         break;
     case TX_DONE:
-        Radio.Rx(RX_TIMEOUT_VALUE);
+        Radio_Rx();
 #ifdef _DEBUG_
         LED_Toggle(LED2);
 #endif
-        State = LOWPOWER;
+        LoraState = LOWPOWER;
         break;
     case RX_TIMEOUT:
     case RX_ERROR:
-        if (isMasterMode == true)
-        {
-            Radio.Rx(RX_TIMEOUT_VALUE);
-        }
-        else if(cntTxSent < NUMBER_RETRANSMISSION)              /* Node 모드에서 재전송 */
-        {
-            cntTxSent++;
-            PRINTF("RESEND\r\n");
-            OnTxEvent(NULL);
-        }
-        else
-        {
-            cntTxSent = 0;
-        }
-        
-
-        State = LOWPOWER;
+        Radio_Rx();
+        LoraState = LOWPOWER;
         break;
     case TX_TIMEOUT:
 
-        State = LOWPOWER;
+        LoraState = LOWPOWER;
         break;
     case LOWPOWER:
     default:
@@ -118,4 +105,23 @@ static void OnledEvent(void *context)
 {
     //LED_Toggle( LED1 ) ;
     TimerStart(&timerLed);
+}
+
+void payloadDataCallback(uint8_t rxSrcID, payloadPacket_TypeDef* payloadData)
+{
+    float temperature = 0;
+    float humidity = 0;
+
+    switch(payloadData->msgID)
+    {
+        case MTYPE_TEMP_HUMI:
+            memcpy((void *)&temperature, (void *)&payloadData->data[0], 4);
+            memcpy((void *)&humidity, (void *)&payloadData->data[4], 4);
+
+            //PRINTF("SRC ID : %d, Temp: %.1f, Humi: %.f \r\n", rxSrcID, temperature, humidity);
+
+            break;
+        default:
+            break;
+    }
 }
