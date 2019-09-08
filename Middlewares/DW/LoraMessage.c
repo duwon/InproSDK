@@ -1,16 +1,21 @@
 #include <stdio.h>
 #include <string.h>
-#include <hw_rtc.h>
+#include "hw.h"
 #include "LoraRadio.h"
 #include "LoraMessage.h"
-#include "util_console.h"
 
 messagePacket_TypeDef txMessage;
 messagePacket_TypeDef nextTxMessage[MAX_ID_LIST];
 messageFIFO_TypeDef rxMessageBuffer;
 
 IDList_TypeDef IDList;                      /* 노드 아이디 정보 구조체 */
-
+#ifdef MASTER_MODE
+uint8_t srcID = MASTER_ID;
+#else
+uint8_t srcID = DEVICE_ID;
+#endif
+uint8_t UID[8] = {0,};
+uint8_t groupID = 0;
 static uint8_t calChecksum(uint8_t *messageData, uint8_t messageSize);
 
 
@@ -44,9 +49,9 @@ ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *paloadData)
   * @param  dataLength: Payload 데이터 크기(byte)  
   * @retval None
   */
-void sendMessage(uint32_t _destID, uint8_t *paloadData, uint8_t paloadSize)
+void sendMessage(uint8_t _destID, uint8_t *paloadData, uint8_t paloadSize)
 {
-    if (dataLength > MESSAGE_MAX_PAYLOAD_SIZE)
+    if (paloadSize > MESSAGE_MAX_PAYLOAD_SIZE)
     {
         //PRINTF("Error. Max data size is %d\r\n",MESSAGE_MAX_PAYLOAD_SIZE)
         return;
@@ -56,6 +61,7 @@ void sendMessage(uint32_t _destID, uint8_t *paloadData, uint8_t paloadSize)
     uint8_t txMessageBuff[txMessageSize];
 
     txMessage.dest = _destID;
+    txMessage.src = srcID;
     txMessage.payloadSize = paloadSize;
     memcpy(txMessage.payload, paloadData, paloadSize);
     txMessage.checksum = calChecksum((uint8_t *)&txMessage, txMessageSize); /* 송신 메시지 구조체 정보 완성 */
@@ -65,12 +71,13 @@ void sendMessage(uint32_t _destID, uint8_t *paloadData, uint8_t paloadSize)
     txMessageBuff[txMessageSize - 2] = txMessage.checksum;
     txMessageBuff[txMessageSize - 1] = MESSAGE_ETX;
 
-    Radio.Send(txMessageBuff, txMessageSize);
+    Radio_Tx(txMessageBuff, txMessageSize);
+
 #ifdef _DEBUG_    
-    PRINTF("%d [TX] ", HW_RTC_GetTimerValue());
-    for (int i = 0; i < txMessageSize; i++)
-        PRINTF("%x ", txMessageBuff[i]);
-    PRINTF("\r\n");
+    //PRINTF("%d [TX] ", HW_RTC_GetTimerValue());
+    //for (int i = 0; i < txMessageSize; i++)
+    //    PRINTF("%x ", txMessageBuff[i]);
+    //PRINTF("\r\n");
 #endif
 }
 
@@ -84,6 +91,8 @@ void Message_Init(void)
     rxMessageBuffer.in = 0;
     rxMessageBuffer.out = 0;
     rxMessageBuffer.count = 0;
+
+    HW_GetUniqueId(UID);
 }
 
 /**
@@ -97,7 +106,7 @@ messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint
     memcpy((void *)&buffer->buff[buffer->in], data, size); /* 버퍼에 저장 */
     buffer->buff[buffer->in].checksum = data[size - 2];
 
-    if ((buffer->buff[buffer->in].dest != srcID) && (isMasterMode != true)) /* 내 ID의 메시지가 아니거나 마스터 모드가 아니면 ERROR 1 리턴 */
+    if (buffer->buff[buffer->in].dest != srcID) /* 내 ID의 메시지가 아니면 ERROR 1 리턴 */
     {
         return NOT_MY_MESSAGE;
     }
@@ -140,16 +149,23 @@ messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint
     {
     }
 
-#ifdef _DEBUG_
-    PRINTF("%d [RX] ", HW_RTC_GetTimerValue());
-    for(int i=0; i<size; i++)
-        PRINTF("%x ", data[i]);
-    PRINTF("      %d byte    ",size);
-    PRINTF("SRC: %X, ",buffer->buff[buffer->in-1].src);
-    PRINTF("payloadSize: %X, ",buffer->buff[buffer->in-1].payloadSize);
-    PRINTF("RSSI: %ddBm, ",buffer->buff[buffer->in-1].rssi);
-    PRINTF("SNR: %d    \r\n",buffer->buff[buffer->in-1].snr);
+#ifdef MASTER_MODE
+    //OutputTrace(data, size);
+		for(int i=0; i<size; i++)
+        PRINTF("%c", data[i]);
+        
 #endif
+#ifdef _DEBUG_
+    //PRINTF("%d [RX] ", HW_RTC_GetTimerValue());
+    //for(int i=0; i<size; i++)
+    //    PRINTF("%x ", data[i]);
+    //PRINTF("      %d byte    ",size);
+    //PRINTF("SRC: %X, ",buffer->buff[buffer->in-1].src);
+    //PRINTF("payloadSize: %X, ",buffer->buff[buffer->in-1].payloadSize);
+    //PRINTF("RSSI: %ddBm, ",buffer->buff[buffer->in-1].rssi);
+    //PRINTF("SNR: %d    \r\n",buffer->buff[buffer->in-1].snr);
+#endif
+
 
     return PUT_SUCCESS;
 }
@@ -252,13 +268,11 @@ bool insertNextMessage(uint8_t _destID, uint8_t *txData, uint8_t dataLength)
   */
 uint8_t getIDInfo(search_type _type, uint8_t *value)
 {
-    uint32_t searchUID = 0;
     if (_type == SEARCH_UID)
     {
-        memcpy((void *)&searchUID, value, 4);
         for (int i = 1; i < MAX_ID_LIST; i++)
         {
-            if (IDList.idInfo[i].uid == searchUID)
+            if (*IDList.idInfo[i].uid == *value)
             {
                 //PRINTF("UID index: %d\r\n", i);
                 return i;
@@ -286,7 +300,7 @@ uint8_t getIDInfo(search_type _type, uint8_t *value)
   * @param  _uid: UID 값
   * @retval UID가 ID List에 없으면 ID와 UID을 저장하고 SUCESS리턴.
   */
-ErrorStatus InsertIDList(uint8_t _id, uint32_t _uid)
+ErrorStatus InsertIDList(uint8_t _id, uint8_t *_uid)
 {
     uint8_t UIDExist = getIDInfo(SEARCH_UID, (uint8_t *)&_uid);
     if (IDList.count >= MAX_ID_LIST)
@@ -297,7 +311,7 @@ ErrorStatus InsertIDList(uint8_t _id, uint32_t _uid)
     {
         if(IDList.idInfo[_id].id == 0)
         IDList.idInfo[_id].id = _id;
-        IDList.idInfo[_id].uid = _uid;
+        *IDList.idInfo[_id].uid = *_uid;
         IDList.count++;
 
         return SUCCESS;
@@ -308,7 +322,7 @@ ErrorStatus InsertIDList(uint8_t _id, uint32_t _uid)
 
         for (int i = 0; i < MAX_ID_LIST; i++)
         {
-            if (IDList.idInfo[i].uid == 0)
+            if (*IDList.idInfo[i].uid == 0)
             {
                 assignID = i;
                 break;
@@ -316,7 +330,7 @@ ErrorStatus InsertIDList(uint8_t _id, uint32_t _uid)
         }
 
         IDList.idInfo[assignID].id = assignID;
-        IDList.idInfo[assignID].uid = _uid;
+        *IDList.idInfo[assignID].uid = *_uid;
         IDList.count++;
 
         return SUCCESS;

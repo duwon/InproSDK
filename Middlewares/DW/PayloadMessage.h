@@ -32,7 +32,7 @@ typedef struct
 
 
 void procPayloadData(void);
-void procMasterMode(void);
+void payloadDataCallback(uint8_t rxSrcID, payloadPacket_TypeDef* payloadData);
 void sendPayloadData(uint8_t _destID, uint8_t msgID, uint8_t *data);
 void pyaloadTimerInit(void);
 void payloadTimerDeInit(void);
@@ -46,10 +46,9 @@ static const uint8_t msgIDLength[TOTAL_MSGID_CNT][2] =
     {MTYPE_REQUEST_ID, 4},
     {MTYPE_RESPONSE_ID, 1},
     {MTYPE_REQUEST_UID, 0},
-    {MTYPE_RESPONSE_UID, 4},
+    {MTYPE_RESPONSE_UID, 8},
     {MTYPE_TEMP_HUMI, 8}
 };
-
 
 
 
