@@ -58,3 +58,7 @@ dkms.conf
 
 #doxygen Documents
 Documents/
+.vscode/
+ETC/SerialTest/obj/Debug/
+ETC/SerialTest/bin/Debug/
+ETC/.vs/SerialTest/v15/Server/
