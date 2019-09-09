@@ -274,9 +274,10 @@ typedef struct _USBD_HandleTypeDef
 
 #define LOBYTE(x)  ((uint8_t)(x & 0x00FFU))
 #define HIBYTE(x)  ((uint8_t)((x & 0xFF00U) >> 8U))
-//#define MIN(a, b)  (((a) < (b)) ? (a) : (b))  //190808 Conflict with lora utility
-//#define MAX(a, b)  (((a) > (b)) ? (a) : (b))  //190808
-
+#ifndef MIN
+#define MIN(a, b)  (((a) < (b)) ? (a) : (b))
+#define MAX(a, b)  (((a) > (b)) ? (a) : (b))
+#endif
 
 #if  defined ( __GNUC__ )
   #ifndef __weak

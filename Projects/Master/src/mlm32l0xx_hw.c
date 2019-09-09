@@ -31,6 +31,9 @@ Maintainer: Miguel Luis and Gregory Cristian
   ******************************************************************************
   */
 
+#include <stdint.h>
+#include <string.h>
+#include <stdarg.h>
 #include "hw.h"
 #include "radio.h"
 #include "debug.h"
@@ -227,10 +230,11 @@ void SystemClock_Config( void )
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
 
   /* Enable HSE Oscillator and Activate PLL with HSE as source */
-  RCC_OscInitStruct.OscillatorType      = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType      = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSI48;
   RCC_OscInitStruct.HSEState            = RCC_HSE_OFF;
   RCC_OscInitStruct.HSIState            = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.HSI48State          = RCC_HSI48_ON;  
   RCC_OscInitStruct.PLL.PLLState        = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource       = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLMUL          = RCC_PLLMUL_6;
@@ -529,6 +533,27 @@ void LPM_ExitStopMode( void)
 void LPM_EnterSleepMode( void)
 {
     HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+}
+
+extern uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
+/**
+  * @brief  USB_Send
+  *         Data to send over USB IN endpoint are sent over CDC interface
+  *         through this function.
+  * @param  *strFormat: string of data to be sent
+  * @retval None
+  */    
+void USB_Send( const char *strFormat, ...)
+{
+  uint8_t TEMPBUFSIZE = 100;
+  char buf[TEMPBUFSIZE];
+  va_list vaArgs;
+  va_start( vaArgs, strFormat);
+  uint16_t bufSize=vsnprintf(buf,TEMPBUFSIZE,strFormat, vaArgs);
+  va_end(vaArgs);
+
+  CDC_Transmit_FS((uint8_t *)buf, bufSize);
+
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

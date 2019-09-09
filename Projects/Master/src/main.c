@@ -9,6 +9,7 @@
 #include "PayloadMessage.h"
 #include "bsp.h"
 #include "vcom.h"
+#include "usb_device.h"
 
 
 #define TX_INTERVAL_TIME                            10000
@@ -34,7 +35,8 @@ int main( void )
 
     DBG_Init( );
     HW_Init( );  
-
+    MX_USB_DEVICE_Init();
+    
     LPM_SetOffMode(LPM_APPLI_Id , LPM_Disable ); /*Disbale Stand-by mode*/
 
     Radio_Init();
@@ -104,6 +106,8 @@ static void procLoraStage(void)
 static void OnledEvent(void *context)
 {
     //LED_Toggle( LED1 ) ;
+    static uint8_t cntLED = 0;
+    USBPRINT("LED Toggle %d\r\n",cntLED++);
     TimerStart(&timerLed);
 }
 
