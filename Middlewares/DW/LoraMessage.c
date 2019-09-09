@@ -62,8 +62,7 @@ void sendMessage(uint8_t _destID, uint8_t *paloadData, uint8_t payloadSize)
 
     txMessage.dest = _destID;
     txMessage.src = srcID;
-    txMessage.payloadSize = payloadSize;
-    memcpy(txMessage.payload, paloadData, payloadSize);
+    memcpy((void*)&txMessage.msgID, paloadData, payloadSize + 2);
     txMessage.checksum = calChecksum((uint8_t *)&txMessage, txMessageSize); /* 송신 메시지 구조체 정보 완성 */
 
     memcpy(txMessageBuff, (void *)&txMessage, txMessageSize);  /* 송신 메시지 크기가 가변임으로 구조체의 체크섬과 ETX는 잘려서 복사됨 */
@@ -74,14 +73,14 @@ void sendMessage(uint8_t _destID, uint8_t *paloadData, uint8_t payloadSize)
     Radio_Tx(txMessageBuff, txMessageSize);
 
 #ifdef _DEBUG_    
-    //PRINTF("%d [TX] ", HW_RTC_GetTimerValue());
-    //for (int i = 0; i < txMessageSize; i++)
-    //    PRINTF("%x ", txMessageBuff[i]);
-    //PRINTF("\r\n");
+    USBPRINT("%d [TX] ", HW_RTC_GetTimerValue());
+    for (int i = 0; i < txMessageSize; i++)
+        USBPRINT("%X ", txMessageBuff[i]);
+    USBPRINT("\r\n");
 #endif
 }
 
-void Message_Init(void)
+void LoraMessage_Init(void)
 {
     txMessage.stx = MESSAGE_STX;
     txMessage.dest = MASTER_ID;
@@ -150,22 +149,25 @@ messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint
     }
 
 #ifdef MASTER_MODE
-    //OutputTrace(data, size);
-		for(int i=0; i<size; i++)
-        PRINTF("%c", data[i]);
-        
-#endif
-#ifdef _DEBUG_
-    //PRINTF("%d [RX] ", HW_RTC_GetTimerValue());
-    //for(int i=0; i<size; i++)
-    //    PRINTF("%x ", data[i]);
-    //PRINTF("      %d byte    ",size);
-    //PRINTF("SRC: %X, ",buffer->buff[buffer->in-1].src);
-    //PRINTF("payloadSize: %X, ",buffer->buff[buffer->in-1].payloadSize);
-    //PRINTF("RSSI: %ddBm, ",buffer->buff[buffer->in-1].rssi);
-    //PRINTF("SNR: %d    \r\n",buffer->buff[buffer->in-1].snr);
-#endif
 
+    for(int i=0; i<size; i++)
+    PRINTF("%c", data[i]);
+        
+
+    #ifdef _DEBUG_
+        USBPRINT("%d [RX] ", HW_RTC_GetTimerValue());
+        for(int i=0; i<size; i++)
+           USBPRINT("%x ", data[i]);
+        USBPRINT("      %d byte  SRC: %X, payloadSize: %X, RSSI: %ddBm, SNR: %d    \r\n",size,buffer->buff[buffer->in-1].src,buffer->buff[buffer->in-1].payloadSize,buffer->buff[buffer->in-1].rssi,buffer->buff[buffer->in-1].snr);
+    #endif
+#else
+    #ifdef _DEBUG_
+        USBPRINT("%d [RX] ", HW_RTC_GetTimerValue());
+        for(int i=0; i<size; i++)
+            USBPRINT("%X ", data[i]);
+        USBPRINT("SRC: %X\r\n",buffer->buff[buffer->in-1].src);
+    #endif
+#endif
 
     return PUT_SUCCESS;
 }

@@ -38,8 +38,8 @@ int main( void )
     
     LPM_SetOffMode(LPM_APPLI_Id , LPM_Disable ); /*Disbale Stand-by mode*/
 
-    Radio_Init();
-    Message_Init();
+    LoraRadio_Init();
+    LoraMessage_Init();
     
     //pyaloadTimerInit();
     mainTimerInit();
@@ -106,10 +106,10 @@ static void procLoraStage(void)
 static void mainTimerInit(void)
 {
 #ifdef _DEBUG_
-    PRINTF("\r\n\r\n\r\nSTART Device..... UID : 0x");
+    USBPRINT("\r\n\r\n\r\nSTART Device..... UID : 0x");
     for(int i=0; i<8; i++)
-        PRINTF("%X ",UID[i]);
-    PRINTF("   Device ID : 0x%x\r\n\r\n", DEVICE_ID);
+        USBPRINT("%X ",UID[i]);
+    USBPRINT("   Device ID : 0x%x\r\n\r\n", DEVICE_ID);
 
     /* Led Timers */
     TimerInit(&timerLed, OnledEvent);
@@ -147,7 +147,7 @@ static void OnTxEvetTest1(void *context)
         tempTxData[0] = 0xC1;
         tempTxData[1] = cntTemp++;
         tempTxData[2] = rand();
-        sendPayloadData(MASTER_ID, MTYPE_TESTMESSAGE1, tempTxData);
+        sendPayloadData(MASTER_ID, tempTxData, sizeof(tempTxData));
 
         TimerSetValue(&timerTx1, 2300);
         TimerStart(&timerTx1);        
@@ -171,7 +171,7 @@ static void OnTxEvetTest2(void *context)
         tempTxData[0] = 0xC2;
         tempTxData[1] = cntTemp++;
         tempTxData[23] = rand();
-        sendPayloadData(MASTER_ID, MTYPE_TESTMESSAGE2, tempTxData);
+        sendPayloadData(MASTER_ID, tempTxData, sizeof(tempTxData));
 
         TimerSetValue(&timerTx2, 3000);
         TimerStart(&timerTx2);
@@ -182,7 +182,7 @@ static void OnledEvent(void *context)
 {
     if (BSP_PB_GetState(BUTTON_USER) == GPIO_PIN_RESET) 
     {
-        PRINTF("Key pressed. \r\n");
+        USBPRINT("Key pressed. \r\n");
         srcID++;
     }
 
@@ -200,17 +200,16 @@ static void OnTxEvent(void *context)
     else
     {
         sensor_t sensor_data;
-        uint8_t tempTxData[8] = {0,};
+        uint8_t tempTxData[9] = {0,};
 
         BSP_sensor_Read( &sensor_data );
-        memcpy((void *)&tempTxData[0], (void *)&sensor_data.temperature, 4);
-        memcpy((void *)&tempTxData[4], (void *)&sensor_data.humidity, 4);
+        tempTxData[0] = MTYPE_TEMP_HUMI;
+        memcpy((void *)&tempTxData[1], (void *)&sensor_data.temperature, 4);
+        memcpy((void *)&tempTxData[5], (void *)&sensor_data.humidity, 4);
 
-        PRINTF("%d [INFO] ", HW_RTC_GetTimerValue());
-        PRINTF("Temp : %.1f     Humi : %.1f   \r\n",sensor_data.temperature, sensor_data.humidity);
         USBPRINT("%d [INFO] ", HW_RTC_GetTimerValue());
         USBPRINT("Temp : %.1f     Humi : %.1f   \r\n",sensor_data.temperature, sensor_data.humidity);        
-        sendPayloadData(MASTER_ID, MTYPE_TEMP_HUMI, tempTxData);
+        sendPayloadData(MASTER_ID, tempTxData, sizeof(tempTxData));
         TimerSetValue(&timerTx, TX_INTERVAL_TIME);
         TimerStart(&timerTx);
     }
@@ -219,18 +218,30 @@ static void OnTxEvent(void *context)
 void payloadDataCallback(uint8_t rxSrcID, payloadPacket_TypeDef* payloadData)
 {
 
-    switch(payloadData->msgID)
+    char *stringPrint = malloc(sizeof(char) * payloadData->length);
+	
+    switch(payloadData->data[0])
     {
-        case MTYPE_TEMP_HUMI:
-
-
+			
+        case 0x01: //USBPRINT
+            strcpy(stringPrint, (char *)&payloadData->data[1]);
+            USBPRINT("Received string from master: %s \r\n",stringPrint);
+            free(stringPrint);
             break;
-        case MTYPE_REQUEST_UID:
-
+        case 0x02: //LED1 ON Control
+            HAL_GPIO_WritePin(LED1_GPIO_PORT, LED1_PIN, GPIO_PIN_RESET);
+            break;
+        case 0x03: //LED1 OFF Control
+            HAL_GPIO_WritePin(LED1_GPIO_PORT, LED1_PIN, GPIO_PIN_SET);
             break;
         default:
             break;
     }
 }
 
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
+{
+  /* buffer transmission complete*/
+   USBPRINT("R: %c",receivedCh);
+   HAL_UART_Receive_DMA(UartHandle, (uint8_t *)&receivedCh, 1);
+}

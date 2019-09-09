@@ -10,28 +10,44 @@
 
 
 static  TimerEvent_t timerBooting;              /* 부팅시 ID 받는 타이머. ID 받으면 종료 */
-static  TimerEvent_t timerDebugTest;            /* 시험용 타이머 */
+//static  TimerEvent_t timerDebugTest;            /* 시험용 타이머 */
 
 static uint8_t getPayloadLength(uint8_t msgID); /* msgID의 data 길이 반환 */
 static void OnBootingEvent(void *context);      /* ID 부여 받는 이벤트 */
-static void OnDebugTestEvent(void *context);    /* 시험용 이벤트 */
-
+static void sendMsgCtlPayloadData(uint8_t _destID, uint8_t msgID, uint8_t *data);
 
 /**
-  * @brief  payload data 송신
+  * @brief  사용자 payload data 송신
+  * @param  _destID: 메시지를 전달 할 주소. Node의 경우 MASTER_ID
+  * @param  data: 사용자 payload data
+  * @param  data: payload data 크기
+  * @retval None
+  */
+void sendPayloadData(uint8_t _destID, uint8_t *data, uint8_t dataSize)
+{
+    payloadPacket_TypeDef tempTxPayloadData;        /* 송신용 Payload 버퍼 구조체 */
+    tempTxPayloadData.msgID = MTYPE_USER_DATA;
+    tempTxPayloadData.length = dataSize;
+    memcpy(tempTxPayloadData.data, data, tempTxPayloadData.length);
+
+    sendMessage(_destID, (void *)&tempTxPayloadData, tempTxPayloadData.length);
+}
+
+/**
+  * @brief  사용자 payload data 송신
   * @param  _destID: 메시지를 전달 할 주소. Node의 경우 MASTER_ID
   * @param  msgID: payload data의 메시지 ID
   * @param  data: 메시지 ID에 해당하는 data
   * @retval None
   */
-void sendPayloadData(uint8_t _destID, uint8_t msgID, uint8_t *data)
+static void sendMsgCtlPayloadData(uint8_t _destID, uint8_t msgID, uint8_t *data)
 {
     payloadPacket_TypeDef tempTxPayloadData;        /* 송신용 Payload 버퍼 구조체 */
     tempTxPayloadData.msgID = msgID;
     tempTxPayloadData.length = getPayloadLength(msgID);
     memcpy(tempTxPayloadData.data, data, tempTxPayloadData.length);
 
-    sendMessage(_destID, (void *)&tempTxPayloadData, tempTxPayloadData.length + 2);
+    sendMessage(_destID, (void *)&tempTxPayloadData, tempTxPayloadData.length);
 }
 
 /**
@@ -56,16 +72,16 @@ static uint8_t getPayloadLength(uint8_t msgID)
 
 void pyaloadTimerInit(void)
 {
-#ifdef MASTER_MODE
-        return;
-#endif
+#ifndef MASTER_MODE
     srand(HW_GetRandomSeed());
     uint32_t timerBootingInterval = (rand() % BOOTING_INTERVAL_TIME) + BOOTING_START_TIME;
     TimerInit(&timerBooting, OnBootingEvent);   
     TimerSetValue( &timerBooting, timerBootingInterval);
     TimerStart(&timerBooting );
 
-    PRINTF("Booting Time : %d ms \r\n",timerBootingInterval);
+    USBPRINT("Booting Time : %d ms \r\n",timerBootingInterval);
+#endif
+
 }
 
 void payloadTimerDeInit(void)
@@ -73,10 +89,6 @@ void payloadTimerDeInit(void)
     TimerStop(&timerBooting);
 }
 
-static void OnDebugTestEvent(void *context)
-{
-
-}
 
 /**
   * @brief  Master에서 ID을 받는 부팅 시퀀스
@@ -85,7 +97,7 @@ static void OnDebugTestEvent(void *context)
   */
 void OnBootingEvent(void *context)
 {
-    sendPayloadData(MASTER_ID, MTYPE_RESPONSE_UID, UID);
+    sendMsgCtlPayloadData(MASTER_ID, MTYPE_RESPONSE_UID, UID);
 
     TimerSetValue(&timerBooting, (rand() % 30000) + BOOTING_INTERVAL_TIME);
     TimerStart(&timerBooting);
@@ -101,19 +113,20 @@ void procPayloadData(void)
 {
     uint8_t rxSrcID;
     payloadPacket_TypeDef rxPayload;
-    messagePacket_TypeDef nextMessage;
+
 
     if (getMessagePayload((void *)&rxSrcID, (uint8_t *)&rxPayload) == SUCCESS)
     {
 #ifdef MASTER_MODE
         /* ACK */
+        messagePacket_TypeDef nextMessage;
         if (existNextMessage(rxSrcID, &nextMessage) == true) /* 노드의 RX 구간에서 전송 할 메시지가 있으면 메시지 전송 */
         {
             sendMessage(rxSrcID, nextMessage.payload, nextMessage.payloadSize);
         }
         else if (rxPayload.msgID != MTYPE_REQUEST_ID) /* 전송 할 메시지가 없으면 payload 없이 메시지 전송. ACK 응답 */
         {
-            sendMessage(rxSrcID, 0, 0);
+            sendPayloadData(rxSrcID, 0, 0);
         }
 #endif
         /* Payload 처리 */
@@ -130,10 +143,10 @@ void procPayloadData(void)
                 }
             }
             break;
-        case ERROR:
+        case MTYPE_USER_DATA:
+            payloadDataCallback(rxSrcID, &rxPayload);
             break;
         default:
-            payloadDataCallback(rxSrcID, &rxPayload);
             break;
         }
 #if 0

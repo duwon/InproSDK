@@ -7,8 +7,6 @@
 #include "PayloadMessage.h"
 #include "timeServer.h"
 
-#define RESEND_INTERVAL_TIME            100
-
 LoraState_t LoraState = LOWPOWER;
 uint8_t resendMessage[TX_MAX_SIZE+1] = {0,};
 static  TimerEvent_t resnedTimer; /* Tx Timers objects */
@@ -40,7 +38,7 @@ void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
     }
     else if (errorCode != PUT_SUCCESS)
     {
-        PRINTF("Message Error Code %d\r\n", errorCode);
+        USBPRINT("Message Error Code %d\r\n", errorCode);
     }
     LoraState = RX_DONE;
 }
@@ -72,7 +70,7 @@ void OnRxError( void )
 #endif
 }
 
-void Radio_Init(void)
+void LoraRadio_Init(void)
 {
     // Radio initialization
     RadioEvents.TxDone = OnTxDone;
@@ -135,5 +133,4 @@ void Radio_Resend(void)
 static void OnTxResend(void* context)
 {
     Radio_Tx(resendMessage, resendMessage[TX_MAX_SIZE]);
-    USBPRINT(" %x ",resendMessage[5]);
 }

@@ -11,6 +11,7 @@ extern "C" {
 
 #define TOTAL_MSGID_CNT                 7
 
+#define MTYPE_USER_DATA                 0x00        /* 사용자 Payload Data */
 #define MTYPE_TESTMESSAGE1              0xFF
 #define MTYPE_TESTMESSAGE2              0xFE
 #define MTYPE_REQUEST_ID                0xA0        /* Node -> Master ID 요청 */
@@ -33,7 +34,7 @@ typedef struct
 
 void procPayloadData(void);
 void payloadDataCallback(uint8_t rxSrcID, payloadPacket_TypeDef* payloadData);
-void sendPayloadData(uint8_t _destID, uint8_t msgID, uint8_t *data);
+void sendPayloadData(uint8_t _destID, uint8_t *data, uint8_t dataSize);
 void pyaloadTimerInit(void);
 void payloadTimerDeInit(void);
 void OnBootingEvent( void* context );

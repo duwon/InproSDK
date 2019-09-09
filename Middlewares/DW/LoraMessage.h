@@ -10,7 +10,7 @@ extern "C" {
 #include <stdbool.h>
     
 #define MESSAGE_BUFFER_SIZE         10          /* 메시지 버퍼 크기 */
-#define MESSAGE_HEADER_SIZE          7
+#define MESSAGE_HEADER_SIZE          8
 #define MESSAGE_MAX_PAYLOAD_SIZE    64          /* 메시지 payload 크기 */
 #define MESSAGE_SIZE                (MESSAGE_HEADER_SIZE + MESSAGE_MAX_PAYLOAD_SIZE)
 #define MESSAGE_STX                 0xA5A5
@@ -30,6 +30,7 @@ typedef struct {
     uint16_t    stx;
     uint8_t     dest;
     uint8_t     src;
+    uint8_t     msgID;
     uint8_t     payloadSize;
     uint8_t     payload[MESSAGE_MAX_PAYLOAD_SIZE];
     uint8_t     checksum;
@@ -78,7 +79,7 @@ extern uint8_t srcID;
 extern uint8_t UID[8];
 extern uint8_t groupID;
 
-void Message_Init(void);
+void LoraMessage_Init(void);
 ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *rxData);
 void sendMessage(uint8_t _destID, uint8_t *txData, uint8_t dataLength);
 messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint8_t *data, uint16_t size,  int16_t rssi, int8_t snr);

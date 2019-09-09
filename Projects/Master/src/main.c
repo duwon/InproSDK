@@ -34,18 +34,18 @@ int main( void )
     SystemClock_Config( );
 
     DBG_Init( );
-    HW_Init( );  
-    
+    HW_Init( ); 
+	
     LPM_SetOffMode(LPM_APPLI_Id , LPM_Disable ); /*Disbale Stand-by mode*/
 
-    Radio_Init();
-    Message_Init();
+    LoraRadio_Init();
+    LoraMessage_Init();
   
 #ifdef _DEBUG_
-    PRINTF("\r\n\r\n\r\nSTART MASTER..... UID : 0x");
+    USBPRINT("\r\n\r\n\r\nSTART MASTER..... UID : 0x");
     for(int i=0; i<8; i++)
-        PRINTF("%X ",UID[i]);
-    PRINTF("   Master ID : 0x%x\r\n\r\n", MASTER_ID);
+        USBPRINT("%X ",UID[i]);
+    USBPRINT("   Master ID : 0x%x\r\n\r\n", MASTER_ID);
 	
 		/* Led Timers */
     TimerInit(&timerLed, OnledEvent);
@@ -105,8 +105,8 @@ static void procLoraStage(void)
 static void OnledEvent(void *context)
 {
     //LED_Toggle( LED1 ) ;
-    static uint8_t cntLED = 0;
-    USBPRINT("LED Toggle %d\r\n",cntLED++);
+    //static uint8_t cntLED = 0;
+    //USBPRINT("LED Toggle %d\r\n",cntLED++);
     TimerStart(&timerLed);
 }
 
@@ -115,13 +115,13 @@ void payloadDataCallback(uint8_t rxSrcID, payloadPacket_TypeDef* payloadData)
     float temperature = 0;
     float humidity = 0;
 
-    switch(payloadData->msgID)
+    switch(payloadData->data[0])
     {
         case MTYPE_TEMP_HUMI:
             memcpy((void *)&temperature, (void *)&payloadData->data[0], 4);
             memcpy((void *)&humidity, (void *)&payloadData->data[4], 4);
 
-            //PRINTF("SRC ID : %d, Temp: %.1f, Humi: %.f \r\n", rxSrcID, temperature, humidity);
+            USBPRINT("SRC ID : %d, Temp: %.1f, Humi: %.f \r\n", rxSrcID, temperature, humidity);
 
             break;
         default:
