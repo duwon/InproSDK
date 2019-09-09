@@ -31,11 +31,16 @@ Maintainer: Miguel Luis and Gregory Cristian
   ******************************************************************************
   */
 
+#include <stdint.h>
+#include <string.h>
+#include <stdarg.h>
 #include "hw.h"
 #include "radio.h"
 #include "debug.h"
 #include "vcom.h"
 #include "bsp.h"
+#include "usb_device.h"
+#include "timeServer.h"
 
 /*!
  *  \brief Unique Devices IDs register set ( STM32L0xxx )
@@ -88,6 +93,10 @@ static bool AdcInitialized = false;
  */
 static bool McuInitialized = false;
 
+#define USB_BUFFER_MAX_SIZE         100
+uint8_t usbSentBuffer[USB_BUFFER_MAX_SIZE+1];
+static  TimerEvent_t timerUSBSend; /* Tx Timers objects */
+static void OnUSBSendEvent( void* context );
 /**
   * @brief This function initializes the hardware
   * @param None
@@ -111,12 +120,16 @@ void HW_Init( void )
     HW_RTC_Init( );
     
     TraceInit( );
-    
+    MX_USB_DEVICE_Init();
+      
     BSP_LED_Init( LED1 );
     BSP_LED_Init( LED2 );
     BSP_PB_Init(BUTTON_KEY,BUTTON_MODE_GPIO);
     BSP_sensor_Init();
 
+
+    TimerInit(&timerUSBSend, OnUSBSendEvent);
+    
     McuInitialized = true;
   }
 }
@@ -227,10 +240,11 @@ void SystemClock_Config( void )
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
 
   /* Enable HSE Oscillator and Activate PLL with HSE as source */
-  RCC_OscInitStruct.OscillatorType      = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType      = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSI48;
   RCC_OscInitStruct.HSEState            = RCC_HSE_OFF;
   RCC_OscInitStruct.HSIState            = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.HSI48State          = RCC_HSI48_ON;  
   RCC_OscInitStruct.PLL.PLLState        = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource       = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLMUL          = RCC_PLLMUL_6;
@@ -529,6 +543,46 @@ void LPM_ExitStopMode( void)
 void LPM_EnterSleepMode( void)
 {
     HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+}
+
+extern uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
+/**
+  * @brief  USB_Send
+  *         Data to send over USB IN endpoint are sent over CDC interface
+  *         through this function.
+  * @param  *strFormat: string of data to be sent
+  * @retval None
+  */    
+void USB_Send( const char *strFormat, ...)
+{
+  char buf[USB_BUFFER_MAX_SIZE];
+  va_list vaArgs;
+  va_start( vaArgs, strFormat);
+  uint16_t bufSize=vsnprintf(buf,USB_BUFFER_MAX_SIZE,strFormat, vaArgs);
+  va_end(vaArgs);
+
+  memcpy(usbSentBuffer, (uint8_t *)buf, bufSize);
+  usbSentBuffer[USB_BUFFER_MAX_SIZE] = bufSize;
+    
+  if(CDC_Transmit_FS((uint8_t *)buf, bufSize) != USBD_OK)
+    {
+        TimerSetValue(&timerUSBSend, 50);
+        TimerStart(&timerUSBSend);   
+    }
+
+}
+
+static void OnUSBSendEvent( void* context )
+{
+  if(CDC_Transmit_FS(usbSentBuffer, usbSentBuffer[USB_BUFFER_MAX_SIZE]) != USBD_OK)
+    {
+        TimerSetValue(&timerUSBSend, 50);
+        TimerStart(&timerUSBSend);
+    }
+    else
+    {
+        TimerStop(&timerUSBSend);
+    }
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -10,7 +10,6 @@
 #include "bsp.h"
 #include "vcom.h"
 
-
 #define TX_INTERVAL_TIME                            10000
 #define NUMBER_RETRANSMISSION                       3
 
@@ -36,6 +35,7 @@ int main( void )
     DBG_Init( );
     HW_Init( );  
 
+    
     LPM_SetOffMode(LPM_APPLI_Id , LPM_Disable ); /*Disbale Stand-by mode*/
 
     Radio_Init();
@@ -79,11 +79,12 @@ static void procLoraStage(void)
         if(cntTxSent < NUMBER_RETRANSMISSION)              /* Node 모드에서 재전송 */
         {
             cntTxSent++;
-            PRINTF("RESEND\r\n");
+            USBPRINT("Resend\r\n");
             Radio_Resend();
         }
         else
         {
+            USBPRINT("Send Fail\r\n");
             cntTxSent = 0;
         }
         
@@ -181,7 +182,7 @@ static void OnledEvent(void *context)
 {
     if (BSP_PB_GetState(BUTTON_USER) == GPIO_PIN_RESET) 
     {
-        PRINTF("key pressed. \r\n");
+        PRINTF("Key pressed. \r\n");
         srcID++;
     }
 
@@ -207,6 +208,8 @@ static void OnTxEvent(void *context)
 
         PRINTF("%d [INFO] ", HW_RTC_GetTimerValue());
         PRINTF("Temp : %.1f     Humi : %.1f   \r\n",sensor_data.temperature, sensor_data.humidity);
+        USBPRINT("%d [INFO] ", HW_RTC_GetTimerValue());
+        USBPRINT("Temp : %.1f     Humi : %.1f   \r\n",sensor_data.temperature, sensor_data.humidity);        
         sendPayloadData(MASTER_ID, MTYPE_TEMP_HUMI, tempTxData);
 
         TimerSetValue(&timerTx, TX_INTERVAL_TIME);

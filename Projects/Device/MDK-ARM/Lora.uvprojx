@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>Broadcast</TargetName>
+      <TargetName>Device</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>5060300::V5.06 update 3 (build 300)::ARMCC</pCCUsed>
@@ -335,7 +335,7 @@
               <MiscControls>--C99</MiscControls>
               <Define>STM32L072xx, USE_B_L072Z_LRWAN1,USE_HAL_DRIVER MASTER_MODE</Define>
               <Undefine></Undefine>
-              <IncludePath>..\inc;..\inc;..\..\..\Drivers\BSP\INPRO_LORAWAN;..\..\..\Drivers\BSP\CMWX1ZZABZ-0xx;..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc;..\..\..\Drivers\CMSIS\Device\ST\STM32L0xx\Include;..\..\..\Drivers\CMSIS\Include;..\..\..\Middlewares\Third_Party\LoRaWAN\Crypto;..\..\..\Middlewares\Third_Party\LoRaWAN\Mac;..\..\..\Middlewares\Third_Party\LoRaWAN\Phy;..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities;..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2;..\..\..\Drivers\BSP\Components\Common;..\..\..\Drivers\BSP\Components\hts221;..\..\..\Drivers\BSP\Components\lps25hb;..\..\..\Drivers\BSP\Components\sx1276;..\..\..\Middlewares\Third_Party\LoRaWAN\Core;..\..\..\Middlewares\DW;..\..\..\Drivers\BSP\Components\lps22hb</IncludePath>
+              <IncludePath>..\inc;..\inc;..\..\..\Drivers\BSP\INPRO_LORAWAN;..\..\..\Drivers\BSP\CMWX1ZZABZ-0xx;..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc;..\..\..\Drivers\CMSIS\Device\ST\STM32L0xx\Include;..\..\..\Drivers\CMSIS\Include;..\..\..\Middlewares\Third_Party\LoRaWAN\Crypto;..\..\..\Middlewares\Third_Party\LoRaWAN\Mac;..\..\..\Middlewares\Third_Party\LoRaWAN\Phy;..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities;..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2;..\..\..\Drivers\BSP\Components\Common;..\..\..\Drivers\BSP\Components\hts221;..\..\..\Drivers\BSP\Components\lps25hb;..\..\..\Drivers\BSP\Components\sx1276;..\..\..\Middlewares\Third_Party\LoRaWAN\Core;..\..\..\Middlewares\DW;..\..\..\Drivers\BSP\Components\lps22hb;..\usb;..\..\..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Inc;..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -544,6 +544,71 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_i2c.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32l0xx_ll_usb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_ll_usb.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32l0xx_hal_pcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32l0xx_hal_pcd_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pcd_ex.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Drivers/USB</GroupName>
+          <Files>
+            <File>
+              <FileName>usb_device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\usb\usb_device.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_cdc_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\usb\usbd_cdc_if.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_conf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\usb\usbd_conf.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_desc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\usb\usbd_desc.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Middlewares/USB</GroupName>
+          <Files>
+            <File>
+              <FileName>usbd_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_ctlreq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_ioreq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ioreq.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_cdc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Src\usbd_cdc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -587,7 +652,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Projects/Broadcast</GroupName>
+          <GroupName>Projects/Device</GroupName>
           <Files>
             <File>
               <FileName>debug.c</FileName>

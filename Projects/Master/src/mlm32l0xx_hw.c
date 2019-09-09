@@ -39,6 +39,8 @@ Maintainer: Miguel Luis and Gregory Cristian
 #include "debug.h"
 #include "vcom.h"
 #include "bsp.h"
+#include "usb_device.h"
+#include "timeServer.h"
 
 /*!
  *  \brief Unique Devices IDs register set ( STM32L0xxx )
@@ -91,6 +93,10 @@ static bool AdcInitialized = false;
  */
 static bool McuInitialized = false;
 
+#define USB_BUFFER_MAX_SIZE         100
+uint8_t usbSentBuffer[USB_BUFFER_MAX_SIZE+1];
+static  TimerEvent_t timerUSBSend; /* Tx Timers objects */
+static void OnUSBSendEvent( void* context );
 /**
   * @brief This function initializes the hardware
   * @param None
@@ -114,12 +120,16 @@ void HW_Init( void )
     HW_RTC_Init( );
     
     TraceInit( );
-    
+    MX_USB_DEVICE_Init();
+      
     BSP_LED_Init( LED1 );
     BSP_LED_Init( LED2 );
     BSP_PB_Init(BUTTON_KEY,BUTTON_MODE_GPIO);
     BSP_sensor_Init();
 
+
+    TimerInit(&timerUSBSend, OnUSBSendEvent);
+    
     McuInitialized = true;
   }
 }
@@ -545,15 +555,34 @@ extern uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
   */    
 void USB_Send( const char *strFormat, ...)
 {
-  uint8_t TEMPBUFSIZE = 100;
-  char buf[TEMPBUFSIZE];
+  char buf[USB_BUFFER_MAX_SIZE];
   va_list vaArgs;
   va_start( vaArgs, strFormat);
-  uint16_t bufSize=vsnprintf(buf,TEMPBUFSIZE,strFormat, vaArgs);
+  uint16_t bufSize=vsnprintf(buf,USB_BUFFER_MAX_SIZE,strFormat, vaArgs);
   va_end(vaArgs);
 
-  CDC_Transmit_FS((uint8_t *)buf, bufSize);
+  memcpy(usbSentBuffer, (uint8_t *)buf, bufSize);
+  usbSentBuffer[USB_BUFFER_MAX_SIZE] = bufSize;
+    
+  if(CDC_Transmit_FS((uint8_t *)buf, bufSize) != USBD_OK)
+    {
+        TimerSetValue(&timerUSBSend, 100);
+        TimerStart(&timerUSBSend);   
+    }
 
+}
+
+static void OnUSBSendEvent( void* context )
+{
+  if(CDC_Transmit_FS(usbSentBuffer, usbSentBuffer[USB_BUFFER_MAX_SIZE]) != USBD_OK)
+    {
+        TimerSetValue(&timerUSBSend, 100);
+        TimerStart(&timerUSBSend);   
+    }
+    else
+    {
+        TimerStop(&timerUSBSend);
+    }
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

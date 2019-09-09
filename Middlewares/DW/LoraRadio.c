@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "LoraRadio.h"
 #include "util_console.h"
 #include "LoraMessage.h"
