@@ -41,7 +41,7 @@ int main( void )
     Radio_Init();
     Message_Init();
     
-    pyaloadTimerInit();
+    //pyaloadTimerInit();
     mainTimerInit();
 
     while( 1 )
@@ -79,12 +79,12 @@ static void procLoraStage(void)
         if(cntTxSent < NUMBER_RETRANSMISSION)              /* Node 모드에서 재전송 */
         {
             cntTxSent++;
-            USBPRINT("Resend\r\n");
+            USBPRINT("%d Resend\r\n",HW_RTC_GetTimerValue());
             Radio_Resend();
         }
         else
         {
-            USBPRINT("Send Fail\r\n");
+            USBPRINT("%d Send Fail\r\n",HW_RTC_GetTimerValue());
             cntTxSent = 0;
         }
         
@@ -192,7 +192,7 @@ static void OnledEvent(void *context)
 
 static void OnTxEvent(void *context)
 {
-    if((LoraState == TX_RUNNING) || (LoraState == RX_RUNNING))
+    if((LoraState == TX_RUNNING) || (LoraState == RX_RUNNING)) /* 메시지가 송신/수신 중일 경우 100ms 후 다시 실행 */
     {
         TimerSetValue(&timerTx, 100);
         TimerStart(&timerTx);
@@ -211,7 +211,6 @@ static void OnTxEvent(void *context)
         USBPRINT("%d [INFO] ", HW_RTC_GetTimerValue());
         USBPRINT("Temp : %.1f     Humi : %.1f   \r\n",sensor_data.temperature, sensor_data.humidity);        
         sendPayloadData(MASTER_ID, MTYPE_TEMP_HUMI, tempTxData);
-
         TimerSetValue(&timerTx, TX_INTERVAL_TIME);
         TimerStart(&timerTx);
     }
@@ -224,6 +223,9 @@ void payloadDataCallback(uint8_t rxSrcID, payloadPacket_TypeDef* payloadData)
     {
         case MTYPE_TEMP_HUMI:
 
+
+            break;
+        case MTYPE_REQUEST_UID:
 
             break;
         default:

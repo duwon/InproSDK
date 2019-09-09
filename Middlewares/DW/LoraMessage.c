@@ -49,21 +49,21 @@ ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *paloadData)
   * @param  dataLength: Payload 데이터 크기(byte)  
   * @retval None
   */
-void sendMessage(uint8_t _destID, uint8_t *paloadData, uint8_t paloadSize)
+void sendMessage(uint8_t _destID, uint8_t *paloadData, uint8_t payloadSize)
 {
-    if (paloadSize > MESSAGE_MAX_PAYLOAD_SIZE)
+    if (payloadSize > MESSAGE_MAX_PAYLOAD_SIZE)
     {
         //PRINTF("Error. Max data size is %d\r\n",MESSAGE_MAX_PAYLOAD_SIZE)
         return;
     }
 
-    uint8_t txMessageSize = MESSAGE_HEADER_SIZE + paloadSize;
+    uint8_t txMessageSize = MESSAGE_HEADER_SIZE + payloadSize;
     uint8_t txMessageBuff[txMessageSize];
 
     txMessage.dest = _destID;
     txMessage.src = srcID;
-    txMessage.payloadSize = paloadSize;
-    memcpy(txMessage.payload, paloadData, paloadSize);
+    txMessage.payloadSize = payloadSize;
+    memcpy(txMessage.payload, paloadData, payloadSize);
     txMessage.checksum = calChecksum((uint8_t *)&txMessage, txMessageSize); /* 송신 메시지 구조체 정보 완성 */
 
     memcpy(txMessageBuff, (void *)&txMessage, txMessageSize);  /* 송신 메시지 크기가 가변임으로 구조체의 체크섬과 ETX는 잘려서 복사됨 */

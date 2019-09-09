@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "hw.h"
 #include "LoraRadio.h"
 #include "util_console.h"
 #include "LoraMessage.h"
 #include "PayloadMessage.h"
 #include "timeServer.h"
 
-#define RESEND_INTERVAL_TIME            200
+#define RESEND_INTERVAL_TIME            100
 
 LoraState_t LoraState = LOWPOWER;
 uint8_t resendMessage[TX_MAX_SIZE+1] = {0,};
@@ -127,11 +128,12 @@ void Radio_Tx( uint8_t *buffer, uint8_t size )
 
 void Radio_Resend(void)
 {
-    TimerSetValue(&resnedTimer, (rand() % RESEND_INTERVAL_TIME) + 100);
+    TimerSetValue(&resnedTimer, (rand() % RESEND_INTERVAL_TIME) + RESEND_INTERVAL_TIME);
     TimerStart(&resnedTimer); 
 }
 
 static void OnTxResend(void* context)
 {
     Radio_Tx(resendMessage, resendMessage[TX_MAX_SIZE]);
+    USBPRINT(" %x ",resendMessage[5]);
 }

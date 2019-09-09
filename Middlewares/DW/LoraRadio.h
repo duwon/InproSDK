@@ -16,7 +16,7 @@ extern "C" {
 #define LORA_SYMBOL_TIMEOUT                         5         // Symbols
 #define LORA_FIX_LENGTH_PAYLOAD_ON                  false
 #define LORA_IQ_INVERSION_ON                        false
-#define RX_TIMEOUT_VALUE                            1000
+#define RX_TIMEOUT_VALUE                            500
 #define TX_MAX_SIZE                                 200
 
 typedef enum
