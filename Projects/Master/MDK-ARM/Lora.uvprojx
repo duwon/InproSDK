@@ -726,6 +726,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>Projects/Message</GroupName>
+          <Files>
+            <File>
+              <FileName>message.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\message.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
   </Targets>

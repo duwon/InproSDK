@@ -37,7 +37,7 @@ extern "C" {
 * @return None
 */
 void vcom_Init(  void (*Txcb)(void) ); 
-  
+void vcom_RxInit(void (*RxCb)(UART_HandleTypeDef *), uint8_t *RxCh);  
 /** 
 * @brief  send buffer @p_data of size size to vcom in dma mode
 * @param  p_data data to be sent

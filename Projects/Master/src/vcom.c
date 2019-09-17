@@ -28,7 +28,7 @@
 static UART_HandleTypeDef UartHandle;
 //uint8_t ch;
 static void (*TxCpltCallback) (void);
-static void (*RxCpltCallback) (void);
+static void (*RxCpltCallback) (UART_HandleTypeDef *);
 
 /* Private function prototypes -----------------------------------------------*/
 /* Functions Definition ------------------------------------------------------*/
@@ -62,7 +62,7 @@ void vcom_Init(  void (*TxCb)(void) )
 
 }
 
-void vcom_RxInit(void (*RxCb)(void), uint8_t *RxCh)
+void vcom_RxInit(void (*RxCb)(UART_HandleTypeDef *), uint8_t *RxCh)
 {
   /*Record Rx complete for DMA*/
   RxCpltCallback=RxCb;
@@ -97,7 +97,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
   //PRINTF("%c",ch);
   //HAL_UART_Receive_DMA(&UartHandle,&ch,1);
-  RxCpltCallback();
+  RxCpltCallback(UartHandle);
 }
 
 void vcom_Trace(  uint8_t *p_data, uint16_t size )

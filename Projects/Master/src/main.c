@@ -61,6 +61,7 @@ int main( void )
     {
         procLoraStage();  
         procPayloadData();
+        procControllerMessage();
     }
 }
 
