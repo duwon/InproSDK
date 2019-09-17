@@ -26,8 +26,10 @@
 /* Private variables ---------------------------------------------------------*/
 /* Uart Handle */
 static UART_HandleTypeDef UartHandle;
-
+//uint8_t ch;
 static void (*TxCpltCallback) (void);
+static void (*RxCpltCallback) (void);
+
 /* Private function prototypes -----------------------------------------------*/
 /* Functions Definition ------------------------------------------------------*/
 void vcom_Init(  void (*TxCb)(void) )
@@ -50,13 +52,52 @@ void vcom_Init(  void (*TxCb)(void) )
   UartHandle.Init.StopBits   = UART_STOPBITS_1;
   UartHandle.Init.Parity     = UART_PARITY_NONE;
   UartHandle.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
-  UartHandle.Init.Mode       = UART_MODE_TX;
+  UartHandle.Init.Mode       |= UART_MODE_TX;
   
   if(HAL_UART_Init(&UartHandle) != HAL_OK)
   {
     /* Initialization Error */
     Error_Handler(); 
   }
+
+}
+
+void vcom_RxInit(void (*RxCb)(void), uint8_t *RxCh)
+{
+  /*Record Rx complete for DMA*/
+  RxCpltCallback=RxCb;
+
+  /*## Configure the UART peripheral ######################################*/
+  /* Put the USART peripheral in the Asynchronous mode (UART Mode) */
+  /* UART1 configured as follow:
+      - Word Length = 8 Bits
+      - Stop Bit = One Stop bit
+      - Parity = ODD parity
+      - BaudRate = 921600 baud
+      - Hardware flow control disabled (RTS and CTS signals) */
+  UartHandle.Instance        = USARTx;
+  
+  UartHandle.Init.BaudRate   = 115200;
+  UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
+  UartHandle.Init.StopBits   = UART_STOPBITS_1;
+  UartHandle.Init.Parity     = UART_PARITY_NONE;
+  UartHandle.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+  UartHandle.Init.Mode       |= UART_MODE_RX;
+  
+  if(HAL_UART_Init(&UartHandle) != HAL_OK)
+  {
+    /* Initialization Error */
+    Error_Handler(); 
+  }
+
+  HAL_UART_Receive_DMA(&UartHandle,RxCh,1);
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
+{
+  //PRINTF("%c",ch);
+  //HAL_UART_Receive_DMA(&UartHandle,&ch,1);
+  RxCpltCallback();
 }
 
 void vcom_Trace(  uint8_t *p_data, uint16_t size )
@@ -73,6 +114,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 void vcom_DMA_TX_IRQHandler(void)
 {
   HAL_DMA_IRQHandler(UartHandle.hdmatx);
+  HAL_DMA_IRQHandler(UartHandle.hdmarx);
 }
 
 void vcom_IRQHandler(void)
@@ -88,7 +130,7 @@ void vcom_DeInit(void)
 void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 {
   static DMA_HandleTypeDef hdma_tx;
-  
+  static DMA_HandleTypeDef hdma_rx;  
   
   /*##-1- Enable peripherals and GPIO Clocks #################################*/
   /* Enable GPIO TX/RX clock */
@@ -122,11 +164,28 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 
   /* Associate the initialized DMA handle to the UART handle */
   __HAL_LINKDMA(huart, hdmatx, hdma_tx);
+
+  /* USART2_RX Init */
+  hdma_rx.Instance                  = USARTx_RX_DMA_CHANNEL;
+  hdma_rx.Init.Request              = USARTx_RX_DMA_REQUEST;
+  hdma_rx.Init.Direction            = DMA_PERIPH_TO_MEMORY;
+  hdma_rx.Init.PeriphInc            = DMA_PINC_DISABLE;
+  hdma_rx.Init.MemInc               = DMA_MINC_ENABLE;
+  hdma_rx.Init.PeriphDataAlignment  = DMA_PDATAALIGN_BYTE;
+  hdma_rx.Init.MemDataAlignment     = DMA_MDATAALIGN_BYTE;
+  hdma_rx.Init.Mode                 = DMA_CIRCULAR;
+  hdma_rx.Init.Priority             = DMA_PRIORITY_LOW;
+  if (HAL_DMA_Init(&hdma_rx) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  __HAL_LINKDMA(huart,hdmarx,hdma_rx);  
     
   /*##-4- Configure the NVIC for DMA #########################################*/
   /* NVIC configuration for DMA transfer complete interrupt (USART1_TX) */
-  HAL_NVIC_SetPriority(USARTx_DMA_TX_IRQn, USARTx_Priority, 1);
-  HAL_NVIC_EnableIRQ(USARTx_DMA_TX_IRQn);
+  HAL_NVIC_SetPriority(USARTx_DMA_TRX_IRQn, USARTx_Priority, 1);
+  HAL_NVIC_EnableIRQ(USARTx_DMA_TRX_IRQn);
     
   /* NVIC for USART, to catch the TX complete */
   HAL_NVIC_SetPriority(USARTx_IRQn, USARTx_DMA_Priority, 1);
@@ -153,7 +212,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
   }  
   
   /*##-4- Disable the NVIC for DMA ###########################################*/
-  HAL_NVIC_DisableIRQ(USARTx_DMA_TX_IRQn);
+  HAL_NVIC_DisableIRQ(USARTx_DMA_TRX_IRQn);
 }
 
 void vcom_IoInit(void)

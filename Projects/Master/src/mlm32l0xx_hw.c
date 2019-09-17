@@ -139,7 +139,7 @@ void HW_Init( void )
     BSP_LED_Init( LED1 );
     BSP_LED_Init( LED2 );
     BSP_PB_Init(BUTTON_KEY,BUTTON_MODE_GPIO);
-    BSP_sensor_Init();
+    //BSP_sensor_Init(); /* 온습도 센서 제거 시 초기화 불가 */
 
 
     TimerInit(&timerUSBSend, OnUSBSendEvent);
