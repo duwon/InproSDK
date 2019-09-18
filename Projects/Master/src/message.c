@@ -222,7 +222,7 @@ void initControllerMessage(void)
 }
 void controllerRxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
-    debug_printf("%c",struControllerUartBuffer.ch);
+    //debug_printf("%c",struControllerUartBuffer.ch);
     putControllerUartBuffer(struControllerUartBuffer.ch);
     HAL_UART_Receive_DMA(UartHandle,&struControllerUartBuffer.ch,1);
 }

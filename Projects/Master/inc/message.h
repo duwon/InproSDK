@@ -58,6 +58,10 @@ typedef struct {
   void ( *parsing) (void);
 } message_TypeDef;
 
+
+
+void procControllerMessage(void);
+
 /*}*/
 #ifdef __cplusplus
 }

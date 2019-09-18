@@ -146,6 +146,12 @@ void procPayloadData(void)
         case MTYPE_USER_DATA:
             payloadDataCallback(rxSrcID, &rxPayload);
             break;
+        case MTYPE_REQUEST_RESET:
+            if(rxSrcID == MASTER_ID)
+            {
+                NVIC_SystemReset();
+            }
+            break;
         default:
             break;
         }

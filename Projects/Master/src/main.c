@@ -9,6 +9,7 @@
 #include "PayloadMessage.h"
 #include "bsp.h"
 #include "vcom.h"
+#include "message.h"
 
 
 
@@ -33,7 +34,7 @@ int main( void )
     HAL_Init( );
     SystemClock_Config( );
 
-    DBG_Init( );
+    //DBG_Init( );
     HW_Init( ); 
 	
     LPM_SetOffMode(LPM_APPLI_Id , LPM_Disable ); /*Disbale Stand-by mode*/

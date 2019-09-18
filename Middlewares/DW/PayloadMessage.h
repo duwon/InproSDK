@@ -18,6 +18,7 @@ extern "C" {
 #define MTYPE_RESPONSE_ID               0xA1        /* Master - > Node ID 정보 송신 */
 #define MTYPE_REQUEST_UID               0xB1        /* Master ->  Node UID 정보 요청 */
 #define MTYPE_RESPONSE_UID              0xB2        /* Node -> Master UID 정보 응답 */
+#define MTYPE_REQUEST_RESET             0xB3        /* Master -> Node 리셋 요청 */
 #define MTYPE_TEMP_HUMI                 0xC0        /* Node -> Master 온/습도 정보 송신 */
 #define MTYPE_CONTROL_DEBUGTIMER        0XFC        /* 테스트용 */
 
