@@ -58,7 +58,7 @@ void sendMessage(uint8_t _destID, uint8_t *paloadData, uint8_t payloadSize)
     }
 
     uint8_t txMessageSize = MESSAGE_HEADER_SIZE + payloadSize;
-    uint8_t txMessageBuff[txMessageSize];
+    uint8_t txMessageBuff[MESSAGE_SIZE];
 
     txMessage.dest = _destID;
     txMessage.src = srcID;

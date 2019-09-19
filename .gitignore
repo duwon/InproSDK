@@ -62,3 +62,6 @@ Documents/
 ETC/SerialTest/obj/Debug/
 ETC/SerialTest/bin/Debug/
 ETC/.vs/SerialTest/v15/Server/
+Projects/**/EWARM/Debug/
+Projects/**/EWARM/Lora/
+Projects/**/EWARM/settings/
