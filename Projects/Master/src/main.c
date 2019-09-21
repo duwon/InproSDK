@@ -120,8 +120,8 @@ void payloadDataCallback(uint8_t rxSrcID, payloadPacket_TypeDef* payloadData)
     switch(payloadData->data[0])
     {
         case MTYPE_TEMP_HUMI:
-            memcpy((void *)&temperature, (void *)&payloadData->data[0], 4);
-            memcpy((void *)&humidity, (void *)&payloadData->data[4], 4);
+            memcpy((void *)&temperature, (void *)&payloadData->data[1], 4);
+            memcpy((void *)&humidity, (void *)&payloadData->data[5], 4);
 
             USBPRINT("SRC ID : %d, Temp: %.1f, Humi: %.f \r\n", rxSrcID, temperature, humidity);
 

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "hw.h"
-#include "LoraRadio.h"
 #include "LoraMessage.h"
 
 messagePacket_TypeDef txMessage;
@@ -26,13 +25,13 @@ static uint8_t calChecksum(uint8_t *messageData, uint8_t messageSize);
   * @param  rxData: 되돌려 받을 Payload Data
   * @retval SUCESS: 데이터 있음. ERROR: 데이터 없음
   */
-ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *paloadData)
+ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *Data)
 {
     messagePacket_TypeDef rxMessage;
 
     if (getMessageBuffer(&rxMessageBuffer, &rxMessage) == SUCCESS)
     {
-        memcpy(paloadData, rxMessage.payload, rxMessage.payloadSize);
+        memcpy(Data, &rxMessage.msgID, rxMessage.payloadSize + 2);
         *_srcID = rxMessage.src;
     }
     else
@@ -49,20 +48,20 @@ ErrorStatus getMessagePayload(uint8_t *_srcID, uint8_t *paloadData)
   * @param  dataLength: Payload 데이터 크기(byte)  
   * @retval None
   */
-void sendMessage(uint8_t _destID, uint8_t *paloadData, uint8_t payloadSize)
+void sendMessage(uint8_t _destID, uint8_t *Data, uint8_t Size)
 {
-    if (payloadSize > MESSAGE_MAX_PAYLOAD_SIZE)
+    if (Size > MESSAGE_MAX_PAYLOAD_SIZE)
     {
         //PRINTF("Error. Max data size is %d\r\n",MESSAGE_MAX_PAYLOAD_SIZE)
         return;
     }
 
-    uint8_t txMessageSize = MESSAGE_HEADER_SIZE + payloadSize;
+    uint8_t txMessageSize = MESSAGE_HEADER_SIZE + Size;
     uint8_t txMessageBuff[MESSAGE_SIZE];
 
     txMessage.dest = _destID;
     txMessage.src = srcID;
-    memcpy((void*)&txMessage.msgID, paloadData, payloadSize + 2);
+    memcpy((void*)&txMessage.msgID, Data, Size + 2);
     txMessage.checksum = calChecksum((uint8_t *)&txMessage, txMessageSize); /* 송신 메시지 구조체 정보 완성 */
 
     memcpy(txMessageBuff, (void *)&txMessage, txMessageSize);  /* 송신 메시지 크기가 가변임으로 구조체의 체크섬과 ETX는 잘려서 복사됨 */

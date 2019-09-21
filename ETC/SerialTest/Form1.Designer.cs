@@ -1,6 +1,6 @@
 ﻿namespace SerialTest
 {
-    partial class Form1
+    partial class SerialTest
     {
         /// <summary>
         /// 필수 디자이너 변수입니다.
@@ -42,6 +42,11 @@
             this.textBox_Debug = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.textBox_RxHex = new System.Windows.Forms.TextBox();
+            this.textBox_destID = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBox_destData = new System.Windows.Forms.TextBox();
+            this.button_destSend = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -189,18 +194,69 @@
             this.textBox_RxHex.Size = new System.Drawing.Size(386, 249);
             this.textBox_RxHex.TabIndex = 20;
             // 
-            // Form1
+            // textBox_destID
+            // 
+            this.textBox_destID.Location = new System.Drawing.Point(347, 70);
+            this.textBox_destID.Name = "textBox_destID";
+            this.textBox_destID.Size = new System.Drawing.Size(34, 23);
+            this.textBox_destID.TabIndex = 21;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("맑은 고딕", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label2.Location = new System.Drawing.Point(287, 74);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(54, 15);
+            this.label2.TabIndex = 22;
+            this.label2.Text = "Dest ID :";
+            // 
+            // textBox_destData
+            // 
+            this.textBox_destData.Location = new System.Drawing.Point(454, 70);
+            this.textBox_destData.Name = "textBox_destData";
+            this.textBox_destData.Size = new System.Drawing.Size(235, 23);
+            this.textBox_destData.TabIndex = 23;
+            // 
+            // button_destSend
+            // 
+            this.button_destSend.Font = new System.Drawing.Font("맑은 고딕", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.button_destSend.Location = new System.Drawing.Point(708, 66);
+            this.button_destSend.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.button_destSend.Name = "button_destSend";
+            this.button_destSend.Size = new System.Drawing.Size(80, 31);
+            this.button_destSend.TabIndex = 24;
+            this.button_destSend.Text = "SEND";
+            this.button_destSend.UseVisualStyleBackColor = true;
+            this.button_destSend.Click += new System.EventHandler(this.Button_destSend_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("맑은 고딕", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label3.Location = new System.Drawing.Point(403, 74);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(45, 15);
+            this.label3.TabIndex = 25;
+            this.label3.Text = "DATA :";
+            // 
+            // SerialTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 420);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.button_destSend);
+            this.Controls.Add(this.textBox_destData);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.textBox_destID);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label_ProjectVersion);
             this.Controls.Add(this.label_projectTitle);
             this.Controls.Add(this.groupBox2);
             this.Font = new System.Drawing.Font("맑은 고딕", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.Name = "Form1";
+            this.Name = "SerialTest";
             this.Text = "시리얼통신";
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
@@ -226,6 +282,11 @@
         private System.Windows.Forms.TextBox textBox_Debug;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TextBox textBox_RxHex;
+        private System.Windows.Forms.TextBox textBox_destID;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBox_destData;
+        private System.Windows.Forms.Button button_destSend;
+        private System.Windows.Forms.Label label3;
     }
 }
 

@@ -25,11 +25,11 @@ ErrorStatus putByteToBuffer(volatile uartFIFO_TypeDef *buffer, uint8_t ch)
     /**
     1. 버퍼에 1Byte 데이터를 저장한다.
     **/
-    if(buffer->count==UART_BUFFER_SIZE)  /* 데이터가 버퍼에 가득 찼으면 ERROR 리턴 */
+    if(buffer->count==UART_BUFFER_SIZE)   /* 데이터가 버퍼에 가득 찼으면 ERROR 리턴 */
         return ERROR;
     buffer->buff[buffer->in++]=ch;        /* 버퍼에 1Byte 저장 */
     buffer->count++;                      /* 버퍼에 저장된 갯수 1 증가 */
-    if(buffer->in==UART_BUFFER_SIZE)     /* 시작 인덱스가 버퍼의 끝이면 */
+    if(buffer->in==UART_BUFFER_SIZE)      /* 시작 인덱스가 버퍼의 끝이면 */
         buffer->in=0;                     /* 시작 인덱스를 0부터 다시 시작 */
     return SUCCESS;
 }
@@ -44,7 +44,7 @@ ErrorStatus getByteFromBuffer(volatile uartFIFO_TypeDef *buffer, uint8_t *ch)
     *ch=buffer->buff[buffer->out];        /* 버퍼에서 1Byte 읽음 */
     buffer->buff[buffer->out++] = 0;
     buffer->count--;                      /* 버퍼에 저장된 데이터 갯수 1 감소 */
-    if(buffer->out==UART_BUFFER_SIZE)    /* 끝 인덱스가 버퍼의 끝이면 */
+    if(buffer->out==UART_BUFFER_SIZE)     /* 끝 인덱스가 버퍼의 끝이면 */
         buffer->out=0;                    /* 끝 인덱스를 0부터 다시 시작 */
     return SUCCESS;
 }
@@ -101,24 +101,25 @@ void procPacketAnalysis(message_TypeDef* messageFrame, volatile uartFIFO_TypeDef
                 messageFrame->nextStage = MESSAGETYPE;                              /* 메시지 프레임이 시작되었음으로 MSG ID 찾는 단계로 넘어가기 */
             }
             else if(buffer->count > 2)
-			{
-				if(( buffer->buff[buffer->out] == MESSAGE_UART_STX) && (buffer->buff[buffer->out+1] == MESSAGE_UART_STX))
-					break;
-				getByteFromBuffer(buffer,(void *)&buffer->ch);
+            {
+                if(( buffer->buff[buffer->out] == MESSAGE_UART_STX) && (buffer->buff[buffer->out+1] == MESSAGE_UART_STX))
+                    break;
+                getByteFromBuffer(buffer,(void *)&buffer->ch);
                 #ifdef _DEBUG_
-				    debug_printf("%x ",buffer->ch);
+                    debug_printf("%x ",buffer->ch);
                 #endif
-			}	
-			break;			
-		}	        
+            }	
+            break;			
+		}
 		case MESSAGETYPE :
 		{
-            if(buffer->count >= 4)                                               /* 수신버퍼에 4개 이상의 데이터가 있으면 */
+            if(buffer->count >= 4)                                              /* 수신버퍼에 4개 이상의 데이터가 있으면 */
             {
                 getByteFromBuffer(buffer,(void *)&messageFrame->data[2]);       /* 1. 수신버퍼의 3번째 바이트 읽어 메시지 프레임 데이터에 넣음 */
                 getByteFromBuffer(buffer,(void *)&messageFrame->data[3]);       /* 1. 수신버퍼의 4번째 바이트 읽어 메시지 프레임 데이터에 넣음 */
                 getByteFromBuffer(buffer,(void *)&messageFrame->data[4]);       /* 1. 수신버퍼의 5번째 바이트 읽어 메시지 프레임 데이터에 넣음 */                
                 getByteFromBuffer(buffer,(void *)&messageFrame->data[5]);       /* 1. 수신버퍼의 6번째 바이트 읽어 메시지 프레임 데이터에 넣음 */
+                messageFrame->dest = messageFrame->data[2];
                 messageFrame->type = messageFrame->data[4];                     /* 2. MSG ID 할당 */
                 messageFrame->datasize = messageFrame->data[5];                   /* 3. MSG ID에 해당하는 MSG 크기 할당 */
                 messageFrame->length = (messageFrame->datasize + MESSAGE_UART_SIZE_WITHOUT_DATA);            /* 4. 2Byte(STX 및 MSG ID)을 제외한 MSG DATA 크기 할당 */
@@ -151,6 +152,7 @@ void procPacketAnalysis(message_TypeDef* messageFrame, volatile uartFIFO_TypeDef
                         debug_printf("%x ",buffer->ch);
                     #endif
                 }
+                messageFrame->nextStage = CHECKSUM;
 			}
 			break;
 		}		
@@ -296,7 +298,8 @@ void parsingControllerMessage(void)
     {
         case 0x0 :
         {
-            debug_printf("Write Register\r\n");
+            insertNextMessage(struRecvControllerMessage.dest,&struRecvControllerMessage.data[6],struRecvControllerMessage.datasize);
+            debug_printf("User Data\r\n");
             break;
         }      
         default :

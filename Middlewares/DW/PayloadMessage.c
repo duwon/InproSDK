@@ -33,6 +33,15 @@ void sendPayloadData(uint8_t _destID, uint8_t *data, uint8_t dataSize)
     sendMessage(_destID, (void *)&tempTxPayloadData, tempTxPayloadData.length);
 }
 
+static void sendAck(uint8_t _destID)
+{
+    payloadPacket_TypeDef tempTxPayloadData;        /* 송신용 Payload 버퍼 구조체 */
+    tempTxPayloadData.msgID = MTYPE_ACK;
+    tempTxPayloadData.length = 0;
+
+    sendMessage(_destID, (void *)&tempTxPayloadData, tempTxPayloadData.length);
+}
+
 /**
   * @brief  사용자 payload data 송신
   * @param  _destID: 메시지를 전달 할 주소. Node의 경우 MASTER_ID
@@ -122,11 +131,11 @@ void procPayloadData(void)
         messagePacket_TypeDef nextMessage;
         if (existNextMessage(rxSrcID, &nextMessage) == true) /* 노드의 RX 구간에서 전송 할 메시지가 있으면 메시지 전송 */
         {
-            sendMessage(rxSrcID, nextMessage.payload, nextMessage.payloadSize);
+            sendPayloadData(rxSrcID, nextMessage.payload, nextMessage.payloadSize);
         }
         else if (rxPayload.msgID != MTYPE_REQUEST_ID) /* 전송 할 메시지가 없으면 payload 없이 메시지 전송. ACK 응답 */
         {
-            sendPayloadData(rxSrcID, 0, 0);
+            sendAck(rxSrcID);
         }
 #endif
         /* Payload 처리 */
@@ -151,6 +160,9 @@ void procPayloadData(void)
             {
                 NVIC_SystemReset();
             }
+            break;
+        case MTYPE_ACK:
+            USBPRINT("ACK OK\r\n");
             break;
         default:
             break;

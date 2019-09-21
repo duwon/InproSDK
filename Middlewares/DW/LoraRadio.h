@@ -17,7 +17,7 @@ extern "C" {
 #define LORA_FIX_LENGTH_PAYLOAD_ON                  false     /* variable payload size */
 #define LORA_IQ_INVERSION_ON                        false
 #ifdef MASTER_MODE
-#define RX_TIMEOUT_VALUE                            200       /* Rx Timeout ms */
+#define RX_TIMEOUT_VALUE                            500       /* Rx Timeout ms */
 #else
 #define RX_TIMEOUT_VALUE                            1000      /* Rx Timeout ms */
 #endif

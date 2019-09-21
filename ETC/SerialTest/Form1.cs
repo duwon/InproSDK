@@ -11,7 +11,7 @@ using System.IO.Ports;
 
 namespace SerialTest
 {
-    public partial class Form1 : Form
+    public partial class SerialTest : Form
     {
         enum Stage : byte { START = 0, MESSAGETYPE = 1, DATA = 2, PARSING = 4, CHECKSUM = 3, SEND = 5, RESEND = 6, STOP = 7, WRITE = 8, END = 9, LENGTH = 10 };
 
@@ -48,7 +48,7 @@ namespace SerialTest
         Message RxMessage = new Message();
         DataPacket packet = new DataPacket();
 
-        public Form1()
+        public SerialTest()
         {
             InitializeComponent();
 
@@ -120,6 +120,30 @@ namespace SerialTest
         {
             button_COMOpen.Enabled = !status;
             button_COMClose.Enabled = status;
+        }
+
+        private void sendFrame(byte[] frameData)
+        {
+            int frameLength = frameData[5] + 8;
+            frameData[frameLength - 2] = calCheckSum(frameData, frameLength);
+
+            try
+            {
+                textBox_RxHex.AppendText("\r\n");
+                sp1.Write(frameData, 0, frameLength);
+                textBox_RxHex.AppendText(BitConverter.ToString(frameData).Replace("-", " ") + " ");
+            }
+            catch
+            {
+            }
+        }
+        private byte calCheckSum(byte[] frameData, int frameLength)
+        {
+            byte checksum = 0;
+            for (int i = 0; i < (frameLength - 2); i++)
+                checksum ^= frameData[i];
+            //checksum = (byte)((checksum ^ 0xFF) );
+            return checksum;
         }
 
         private void sp1_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -320,6 +344,24 @@ namespace SerialTest
                 RemainBytes.Clear();
                 return s;
             }
+        }
+
+        private void Button_destSend_Click(object sender, EventArgs e)
+        {
+            /*
+            byte[] textbox_data = BitConverter.GetBytes(Convert.ToInt32(textBox_destData.Text, 16));
+            byte[] txbuff = {0xA5, 0xA5, (byte)Convert.ToInt32(textBox_destData.Tex };
+            txbuff[0] = (byte)Packet.STX;
+            txbuff[1] = (byte)Packet.STX;
+            //txbuff[2] =;
+
+            Message TxMessage = new Message();
+            TxMessage.destID = (byte)Convert.ToInt32(textBox_destData.Text, 16);
+                
+                , 0xB1, 10, (byte)Convert.ToInt32(textBox_destData.Text, 16), textbox_data[2], textbox_data[1], textbox_data[0], (byte)Packet.CHECKSUM, (byte)Packet.ETX };
+                */
+            byte[] txbuff = { 0xA5, 0xA5, (byte)Convert.ToInt32(textBox_destID.Text, 16), 0, 0, 2, 0x10, 0x20, (byte)Packet.CHECKSUM, (byte)Packet.ETX };
+            sendFrame(txbuff);
         }
     }
 }

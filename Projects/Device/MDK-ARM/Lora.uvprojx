@@ -15,7 +15,7 @@
         <TargetCommonOption>
           <Device>STM32L072CZYx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32L0xx_DFP.2.0.0</PackID>
+          <PackID>Keil.STM32L0xx_DFP.2.0.1</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x00030000) IRAM(0x20000000,0x00005000) CPUTYPE("Cortex-M0+") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -333,7 +333,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--C99</MiscControls>
-              <Define>STM32L072xx, USE_B_L072Z_LRWAN1,USE_HAL_DRIVER MASTER_MODE</Define>
+              <Define>STM32L072xx, USE_B_L072Z_LRWAN1,USE_HAL_DRIVER</Define>
               <Undefine></Undefine>
               <IncludePath>..\inc;..\inc;..\..\..\Drivers\BSP\INPRO_LORAWAN;..\..\..\Drivers\BSP\CMWX1ZZABZ-0xx;..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc;..\..\..\Drivers\CMSIS\Device\ST\STM32L0xx\Include;..\..\..\Drivers\CMSIS\Include;..\..\..\Middlewares\Third_Party\LoRaWAN\Crypto;..\..\..\Middlewares\Third_Party\LoRaWAN\Mac;..\..\..\Middlewares\Third_Party\LoRaWAN\Phy;..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities;..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2;..\..\..\Drivers\BSP\Components\Common;..\..\..\Drivers\BSP\Components\hts221;..\..\..\Drivers\BSP\Components\lps25hb;..\..\..\Drivers\BSP\Components\sx1276;..\..\..\Middlewares\Third_Party\LoRaWAN\Core;..\..\..\Middlewares\DW;..\..\..\Drivers\BSP\Components\lps22hb;..\usb;..\..\..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Inc;..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc</IncludePath>
             </VariousControls>

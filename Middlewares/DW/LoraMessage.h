@@ -6,8 +6,9 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32l0xx_hal.h"
 #include <stdbool.h>
+#include "stm32l0xx_hal.h"
+#include "LoraRadio.h"
     
 #define MESSAGE_BUFFER_SIZE         10          /* 메시지 버퍼 크기 */
 #define MESSAGE_HEADER_SIZE          8
@@ -16,9 +17,9 @@ extern "C" {
 #define MESSAGE_STX                 0xA5A5
 #define MESSAGE_ETX                 0x04
 
-//#if  MESSAGE_SIZE > TX_MAX_SIZE
-//	#error "Please change MESSAGE_MAX_PAYLOAD_SIZE"
-//#endif
+#if  MESSAGE_SIZE > TX_MAX_SIZE
+	#error "Please change MESSAGE_MAX_PAYLOAD_SIZE"
+#endif
 
 #define MASTER_ID                   0x00
 #define DEVICE_ID                   0X01

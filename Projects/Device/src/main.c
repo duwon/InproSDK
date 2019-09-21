@@ -114,17 +114,17 @@ static void mainTimerInit(void)
     /* Led Timers */
     TimerInit(&timerLed, OnledEvent);
     TimerSetValue(&timerLed, 1000);
-    OnledEvent(&timerLed);
+    //OnledEvent(&timerLed);
 
     /* Test Event 1*/
     TimerInit(&timerTx1, OnTxEvetTest1);
     TimerSetValue(&timerTx1, 6000);
-    TimerStart(&timerTx1);
+    //OnTxEvetTest1(&timerTx1);
 
     /* Test Event 2*/
     TimerInit(&timerTx2, OnTxEvetTest2);
     TimerSetValue(&timerTx2, 7000);
-    TimerStart(&timerTx2);    
+    //OnTxEvetTest2(&timerTx2);    
 #endif
 
     /* Tx Timers */
@@ -234,14 +234,12 @@ void payloadDataCallback(uint8_t rxSrcID, payloadPacket_TypeDef* payloadData)
         case 0x03: //LED1 OFF Control
             HAL_GPIO_WritePin(LED1_GPIO_PORT, LED1_PIN, GPIO_PIN_SET);
             break;
+				case 0x10:
+            USBPRINT("Received User Data : %x\r\n",payloadData->data[1]);
+            break;
         default:
+						USBPRINT("User data type none\r\n");
             break;
     }
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
-{
-  /* buffer transmission complete*/
-   USBPRINT("R: %c",receivedCh);
-   HAL_UART_Receive_DMA(UartHandle, (uint8_t *)&receivedCh, 1);
-}
