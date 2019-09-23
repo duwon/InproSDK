@@ -5,163 +5,51 @@
     <configuration>
         <name>Master</name>
         <outputs>
-            <file>$PROJ_DIR$\..\usb\usbd_desc.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2_temperature.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\CMSIS\Device\ST\STM32L0xx\Source\Templates\system_stm32l0xx.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pcd_ex.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\INPRO_LORAWAN\inproRev2.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc_ex.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_tim.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2_humidity.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pwr.c</file>
             <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pwr_ex.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_tim_ex.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_spi.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rcc.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_adc_ex.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2_temperature.c</file>
             <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_uart.c</file>
             <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_uart_ex.c</file>
-            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\low_power_manager.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2_humidity.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\sx1276\sx1276.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_adc.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_tim.c</file>
-            <file>$PROJ_DIR$\..\usb\usbd_conf.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rcc_ex.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pwr.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_adc_ex.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_cortex.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pcd.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_dma.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_i2c.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rcc.c</file>
-            <file>$PROJ_DIR$\..\usb\usbd_cdc_if.c</file>
-            <file>$PROJ_DIR$\..\usb\usb_device.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_spi.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_gpio.c</file>
             <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_ll_usb.c</file>
-            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\lps22hb\LPS22HB_Driver_HL.c</file>
+            <file>$PROJ_DIR$\..\usb\usb_device.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_cortex.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rcc_ex.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\CMSIS\Device\ST\STM32L0xx\Source\Templates\system_stm32l0xx.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pcd.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc_ex.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_tim_ex.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_adc.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pcd_ex.c</file>
+            <file>$PROJ_DIR$\..\usb\usbd_cdc_if.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_i2c.c</file>
+            <file>$PROJ_DIR$\..\usb\usbd_conf.c</file>
+            <file>$PROJ_DIR$\..\usb\usbd_desc.c</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\queue.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\INPRO_LORAWAN\inproRev2.c</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\low_power_manager.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_gpio.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_dma.c</file>
             <file>$PROJ_DIR$\..\..\..\Drivers\BSP\CMWX1ZZABZ-0xx\mlm32l07x01.c</file>
             <file>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\hts221\HTS221_Driver.c</file>
             <file>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\hts221\HTS221_Driver_HL.c</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\sx1276\sx1276.c</file>
             <file>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\lps22hb\LPS22HB_Driver.c</file>
-            <file>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Src\usbd_cdc.c</file>
-            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\utilities.c</file>
-            <file>$PROJ_DIR$\..\src\debug.c</file>
-            <file>$PROJ_DIR$\..\src\hw_spi.c</file>
-            <file>$PROJ_DIR$\..\src\bsp.c</file>
-            <file>$PROJ_DIR$\..\src\message.c</file>
-            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\timeServer.c</file>
-            <file>$PROJ_DIR$\..\..\..\Middlewares\DW\LoraMessage.c</file>
-            <file>$PROJ_DIR$\..\..\..\Middlewares\DW\LoraRadio.c</file>
-            <file>$PROJ_DIR$\..\src\main.c</file>
-            <file>$PROJ_DIR$\..\src\vcom.c</file>
-            <file>$PROJ_DIR$\..\..\..\Middlewares\DW\PayloadMessage.c</file>
-            <file>$PROJ_DIR$\..\src\mlm32l0xx_hw.c</file>
-            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\trace.c</file>
-            <file>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.c</file>
-            <file>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_core.c</file>
-            <file>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ioreq.c</file>
-            <file>$PROJ_DIR$\..\src\hw_gpio.c</file>
-            <file>$PROJ_DIR$\..\src\mlm32l0xx_it.c</file>
-            <file>$PROJ_DIR$\startup_stm32l072xx.s</file>
-            <file>$PROJ_DIR$\..\src\mlm32l0xx_hal_msp.c</file>
-            <file>$PROJ_DIR$\..\src\hw_rtc.c</file>
-            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\queue.c</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_adc_ex.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pwr.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_adc.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\sx1276.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\mlm32l07x01.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\inproRev2.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\system_stm32l0xx.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_cortex.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_dma.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\x_nucleo_iks01a2.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_gpio.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\LPS22HB_Driver.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\x_nucleo_iks01a2_temperature.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pcd.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\x_nucleo_iks01a2_humidity.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_i2c.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pcd_ex.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pwr_ex.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\LPS22HB_Driver_HL.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\HTS221_Driver.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\HTS221_Driver_HL.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\hw_rtc.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rcc.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_uart_ex.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_ll_usb.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\usbd_cdc.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\PayloadMessage.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\usb_device.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\timeServer.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\usbd_core.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\low_power_manager.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\bsp.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_uart.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\debug.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\hw_spi.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\main.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rtc_ex.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_spi.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\queue.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\usbd_ioreq.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rcc_ex.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\usbd_desc.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\usbd_cdc_if.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_tim_ex.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\trace.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_tim.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\usbd_conf.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\usbd_ctlreq.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\LoraMessage.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\LoraRadio.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rtc.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\utilities.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\hw_gpio.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pcd_ex.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pwr.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pwr_ex.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rcc.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rcc_ex.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rtc.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rtc_ex.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\startup_stm32l072xx.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\message.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\HTS221_Driver.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\x_nucleo_iks01a2_humidity.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\mlm32l0xx_hal_msp.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\vcom.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\sx1276.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_adc.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_adc_ex.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\HTS221_Driver_HL.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\x_nucleo_iks01a2_temperature.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_cortex.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\mlm32l0xx_it.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\mlm32l0xx_hw.o</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\mlm32l07x01.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\LPS22HB_Driver_HL.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_i2c.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\x_nucleo_iks01a2.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\inproRev2.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\system_stm32l0xx.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_dma.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\LPS22HB_Driver.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pcd.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_gpio.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\trace.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\LoraMessage.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\bsp.xcl</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\lps22hb\LPS22HB_Driver_HL.c</file>
             <file>$PROJ_DIR$\Debug\Obj\mlm32l0xx_it.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\usb_device.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\vcom.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_uart.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_uart_ex.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\usbd_cdc_if.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\usbd_cdc.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\usbd_ctlreq.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_i2c.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\usbd_desc.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\low_power_manager.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_spi.xcl</file>
@@ -169,238 +57,229 @@
             <file>$PROJ_DIR$\Debug\Obj\hw_gpio.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\hw_rtc.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_tim_ex.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\bsp.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_dma.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pcd.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_uart_ex.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\usbd_cdc_if.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_cortex.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\mlm32l07x01.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\x_nucleo_iks01a2.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\inproRev2.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\system_stm32l0xx.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_gpio.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\mlm32l0xx_it.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\LPS22HB_Driver_HL.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\LPS22HB_Driver.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\trace.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\mlm32l0xx_hw.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\LoraMessage.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\x_nucleo_iks01a2_humidity.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\vcom.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\sx1276.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_adc.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_adc_ex.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\HTS221_Driver_HL.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rtc.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pwr.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_tim_ex.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\usbd_ctlreq.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pwr_ex.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\x_nucleo_iks01a2_temperature.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\LoraRadio.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\usbd_cdc_if.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rtc.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\usbd_conf.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\message.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\mlm32l0xx_hal_msp.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rcc_ex.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_tim.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\LoraMessage.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rcc.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\startup_stm32l072xx.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\trace.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\utilities.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\usbd_desc.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\hw_gpio.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pcd_ex.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rcc_ex.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rtc_ex.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\HTS221_Driver.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\mlm32l0xx_hw.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\message.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\queue.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\hw_spi.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\usbd_ioreq.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\utilities.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_tim.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\usbd_conf.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\usbd_core.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\LoraRadio.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\timeServer.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\debug.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\main.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\mlm32l0xx_hal_msp.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\mlm32l0xx_hw.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\utilities.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\timeServer.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\usbd_ioreq.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\usbd_core.xcl</file>
             <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_ll_usb.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\queue.xcl</file>
-            <file>$PROJ_DIR$\Debug\Obj\Lora.pbd</file>
+            <file>$PROJ_DIR$\Debug\Obj\mlm32l0xx_hal_msp.xcl</file>
             <file>$PROJ_DIR$\Debug\Exe\template_project.out</file>
-            <file>$PROJ_DIR$\Debug\Obj\message.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\usbd_conf.xcl</file>
+            <file>$PROJ_DIR$\Debug\Obj\Lora.pbd</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ioreq.c</file>
+            <file>$PROJ_DIR$\..\src\hw_spi.c</file>
+            <file>$PROJ_DIR$\..\src\main.c</file>
+            <file>$PROJ_DIR$\..\src\debug.c</file>
+            <file>$PROJ_DIR$\..\src\mlm32l0xx_hal_msp.c</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_adc.o</file>
+            <file>$PROJ_DIR$\..\src\hw_gpio.c</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Src\usbd_cdc.c</file>
+            <file>$PROJ_DIR$\Debug\Obj\sx1276.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\inproRev2.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\system_stm32l0xx.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_cortex.o</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.c</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_dma.o</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\DW\LoraRadio.c</file>
+            <file>$PROJ_DIR$\startup_stm32l072xx.s</file>
+            <file>$PROJ_DIR$\..\src\hw_rtc.c</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\DW\LoraMessage.c</file>
+            <file>$PROJ_DIR$\..\src\bsp.c</file>
+            <file>$PROJ_DIR$\..\src\message.c</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pwr.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\mlm32l07x01.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal.o</file>
+            <file>$PROJ_DIR$\..\src\mlm32l0xx_it.c</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\timeServer.c</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_core.c</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\DW\PayloadMessage.c</file>
+            <file>$PROJ_DIR$\..\src\vcom.c</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\utilities.c</file>
+            <file>$PROJ_DIR$\..\src\mlm32l0xx_hw.c</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_adc_ex.o</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\trace.c</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_uart_ex.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\debug.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pcd_ex.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_i2c.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pwr_ex.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\hw_spi.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\LPS22HB_Driver_HL.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\x_nucleo_iks01a2.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\x_nucleo_iks01a2_temperature.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_pcd.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\HTS221_Driver_HL.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\hw_rtc.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rcc.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\LPS22HB_Driver.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_ll_usb.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\usbd_cdc.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\usb_device.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\low_power_manager.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_uart.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\main.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\HTS221_Driver.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\x_nucleo_iks01a2_humidity.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\timeServer.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\bsp.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_gpio.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_rtc_ex.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\PayloadMessage.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\usbd_core.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\stm32l0xx_hal_spi.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\queue.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\usbd_ioreq.o</file>
+            <file>$PROJ_DIR$\..\inc\vcom.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_ll_usb.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_tim.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_tim_ex.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_rtc_ex.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_uart_ex.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_pcd.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_spi.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\BSP\INPRO_LORAWAN\inproRev2.h</file>
+            <file>$PROJ_DIR$\..\inc\hw_gpio.h</file>
+            <file>$PROJ_DIR$\..\inc\hw_spi.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_ll_rtc.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_uart.h</file>
+            <file>$PROJ_DIR$\..\inc\hw_rtc.h</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\utilities.h</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\trace.h</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\systime.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\time.h</file>
+            <file>$PROJ_DIR$\..\inc\debug.h</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\util_console.h</file>
+            <file>$PROJ_DIR$\..\inc\mlm32l0xx_hw_conf.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_rtc.h</file>
+            <file>$PROJ_DIR$\..\inc\hw_msp.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\time32.h</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\DW\PayloadMessage.h</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\DW\LoraMessage.h</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\DW\LoraRadio.h</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Phy\radio.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_pwr_ex.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_pcd_ex.h</file>
+            <file>$PROJ_DIR$\..\inc\utilities_conf.h</file>
+            <file>$PROJ_DIR$\..\inc\bsp.h</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\low_power_manager.h</file>
+            <file>$PROJ_DIR$\..\inc\message.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\ysizet.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\stdio.h</file>
+            <file>$PROJ_DIR$\..\inc\hw.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\string.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\DLib_Product_stdlib.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\math.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\DLib_Product_string.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\DLib_float_setup.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\ycheck.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</file>
+            <file>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\timeServer.h</file>
+            <file>$TOOLKIT_DIR$\lib\shb_l.a</file>
+            <file>$PROJ_DIR$\Debug\List\template_project.map</file>
+            <file>$TOOLKIT_DIR$\lib\m6M_tl.a</file>
+            <file>$TOOLKIT_DIR$\config\linker\ST\stm32l072xZ.icf</file>
+            <file>$TOOLKIT_DIR$\lib\rt6M_tl.a</file>
+            <file>$TOOLKIT_DIR$\lib\dl6M_tln.a</file>
+            <file>$TOOLKIT_DIR$\inc\c\stdint.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\Legacy\stm32_hal_legacy.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_rcc_ex.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_i2c.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_def.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_rcc.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\CMSIS\Include\cmsis_compiler.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\iccarm_builtin.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\CMSIS\Device\ST\STM32L0xx\Include\system_stm32l0xx.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\CMSIS\Include\mpu_armv7.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_dma.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_adc.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_flash_ex.h</file>
+            <file>$PROJ_DIR$\..\inc\stm32l0xx_hal_conf.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\CMSIS\Include\cmsis_iccarm.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_cortex.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_adc_ex.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\CMSIS\Include\core_cm0plus.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\stddef.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_gpio.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_flash_ramfunc.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_gpio_ex.h</file>
+            <file>$PROJ_DIR$\..\inc\hw_conf.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\CMSIS\Include\cmsis_version.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_i2c_ex.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_iwdg.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_pwr.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\CMSIS\Device\ST\STM32L0xx\Include\stm32l072xx.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_flash.h</file>
+            <file>$PROJ_DIR$\..\..\..\Drivers\CMSIS\Device\ST\STM32L0xx\Include\stm32l0xx.h</file>
         </outputs>
         <file>
             <name>[ROOT_NODE]</name>
             <outputs>
                 <tool>
                     <name>ILINK</name>
-                    <file> 179</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\usb\usbd_desc.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 102</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 157</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2_temperature.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 73</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 131</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 70</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 139</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\CMSIS\Device\ST\STM32L0xx\Source\Templates\system_stm32l0xx.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 66</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 141</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pcd_ex.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 77</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 114</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\INPRO_LORAWAN\inproRev2.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 65</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 140</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc_ex.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 97</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 120</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pwr_ex.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 78</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 116</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_tim_ex.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 104</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 163</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_uart.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 93</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 152</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_uart_ex.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 84</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 153</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\low_power_manager.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 91</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 158</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 111</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 119</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2_humidity.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 75</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 124</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\sx1276\sx1276.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 63</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 127</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_adc.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 62</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 128</file>
+                    <file> 115 232</file>
                 </tool>
             </outputs>
         </file>
@@ -409,50 +288,24 @@
             <outputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 106</file>
+                    <file> 89</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 167</file>
+                    <file> 105</file>
                 </tool>
             </outputs>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\usb\usbd_conf.c</name>
+            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2_humidity.c</name>
             <outputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 107</file>
+                    <file> 171</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 168</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rcc_ex.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 101</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 118</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pwr.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 61</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 115</file>
+                    <file> 70</file>
                 </tool>
             </outputs>
         </file>
@@ -461,115 +314,37 @@
             <outputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 69</file>
+                    <file> 140</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 135</file>
+                    <file> 59</file>
                 </tool>
             </outputs>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_adc_ex.c</name>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pwr.c</name>
             <outputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 60</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 129</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_cortex.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 67</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 132</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pcd.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 74</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 144</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_dma.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 68</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 142</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_i2c.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 76</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
                     <file> 138</file>
                 </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rcc.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 83</file>
-                </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 117</file>
+                    <file> 77</file>
                 </tool>
             </outputs>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\usb\usbd_cdc_if.c</name>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pwr_ex.c</name>
             <outputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 103</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
                     <file> 154</file>
                 </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\usb\usb_device.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 88</file>
-                </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 150</file>
+                    <file> 80</file>
                 </tool>
             </outputs>
         </file>
@@ -578,24 +353,89 @@
             <outputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 98</file>
+                    <file> 178</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 159</file>
+                    <file> 47</file>
                 </tool>
             </outputs>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_gpio.c</name>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rcc.c</name>
             <outputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 71</file>
+                    <file> 162</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 145</file>
+                    <file> 91</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_adc_ex.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 148</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 74</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 157</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 60</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\X_NUCLEO_IKS01A2\x_nucleo_iks01a2_temperature.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 158</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 81</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_uart.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 168</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 41</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_uart_ex.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 150</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 55</file>
                 </tool>
             </outputs>
         </file>
@@ -604,120 +444,185 @@
             <outputs>
                 <tool>
                     <name>ICCARM</name>
+                    <file> 164</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 113</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\usb\usb_device.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 166</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 39</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_cortex.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 129</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 57</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rcc_ex.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 88</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 98</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\CMSIS\Device\ST\STM32L0xx\Source\Templates\system_stm32l0xx.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 128</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 62</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pcd.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 159</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 54</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 76</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 84</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc_ex.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 175</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 99</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_tim_ex.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 78</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 51</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_adc.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 123</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 73</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pcd_ex.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 152</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 97</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\usb\usbd_cdc_if.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 83</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 56</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_i2c.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 153</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 44</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\usb\usbd_conf.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
                     <file> 85</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 176</file>
+                    <file> 116</file>
                 </tool>
             </outputs>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\lps22hb\LPS22HB_Driver_HL.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 79</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 137</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\CMWX1ZZABZ-0xx\mlm32l07x01.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 64</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 136</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\hts221\HTS221_Driver.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 80</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 123</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\hts221\HTS221_Driver_HL.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 81</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 130</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\lps22hb\LPS22HB_Driver.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 72</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 143</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Src\usbd_cdc.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 86</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 155</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\utilities.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 112</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 166</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\src\debug.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 94</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 172</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\src\hw_spi.c</name>
+            <name>$PROJ_DIR$\..\usb\usbd_desc.c</name>
             <outputs>
                 <tool>
                     <name>ICCARM</name>
@@ -725,237 +630,7 @@
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 164</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\src\bsp.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 92</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 148</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\src\message.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 122</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 180</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\timeServer.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 89</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 171</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Middlewares\DW\LoraMessage.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 109</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 147</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Middlewares\DW\LoraRadio.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 110</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 170</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\src\main.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 96</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 173</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\src\vcom.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 126</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 151</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Middlewares\DW\PayloadMessage.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 87</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 160</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\src\mlm32l0xx_hw.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 134</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 175</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\trace.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 105</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 146</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 108</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 156</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_core.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 90</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 169</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ioreq.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 100</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 165</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\src\hw_gpio.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 113</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 161</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\src\mlm32l0xx_it.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 133</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 149</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\startup_stm32l072xx.s</name>
-            <outputs>
-                <tool>
-                    <name>AARM</name>
-                    <file> 121</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\src\mlm32l0xx_hal_msp.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 125</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 174</file>
-                </tool>
-            </outputs>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\src\hw_rtc.c</name>
-            <outputs>
-                <tool>
-                    <name>ICCARM</name>
-                    <file> 82</file>
-                </tool>
-                <tool>
-                    <name>BICOMP</name>
-                    <file> 162</file>
+                    <file> 45</file>
                 </tool>
             </outputs>
         </file>
@@ -964,17 +639,464 @@
             <outputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 99</file>
+                    <file> 179</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 177</file>
+                    <file> 103</file>
                 </tool>
             </outputs>
         </file>
-        <forcedrebuild>
-            <name>[MULTI_TOOL]</name>
-            <tool>ILINK</tool>
-        </forcedrebuild>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\INPRO_LORAWAN\inproRev2.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 127</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 61</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\low_power_manager.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 167</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 46</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_gpio.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 174</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 63</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_dma.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 131</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 53</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\CMWX1ZZABZ-0xx\mlm32l07x01.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 139</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 58</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\hts221\HTS221_Driver.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 170</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 100</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\hts221\HTS221_Driver_HL.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 160</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 75</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\sx1276\sx1276.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 126</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 72</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\lps22hb\LPS22HB_Driver.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 163</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 66</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Drivers\BSP\Components\lps22hb\LPS22HB_Driver_HL.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 156</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 65</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\Debug\Exe\template_project.out</name>
+            <outputs>
+                <tool>
+                    <name>ILINK</name>
+                    <file> 232</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ILINK</name>
+                    <file> 234 173 151 170 160 96 161 155 127 90 82 167 163 156 169 86 139 87 68 64 176 179 92 140 123 148 129 131 174 153 159 152 138 154 162 88 76 175 178 89 78 168 150 164 126 128 172 93 166 165 83 85 177 79 95 180 94 71 157 171 158 231 235 233 236</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ioreq.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 180</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 111</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\hw_spi.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 155</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 104</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\main.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 169</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 108</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 218 226 228 227 229 223 215 222 225 219 217 220 224 221 237 260 247 251 242 241 267 265 255 261 243 252 244 246 245 238 256 239 257 259 248 253 249 254 266 250 258 240 262 263 264 209 202 185 188 183 184 193 186 187 182 210 189 201 192 190 191 194 195 196 211 181 203 200 197 198 204 199 216 230 213 207 208 206 205 212 214</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\debug.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 151</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 107</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\mlm32l0xx_hal_msp.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 87</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 114</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\hw_gpio.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 96</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 49</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Src\usbd_cdc.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 165</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 42</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 79</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 43</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Middlewares\DW\LoraRadio.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 82</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 106</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\startup_stm32l072xx.s</name>
+            <outputs>
+                <tool>
+                    <name>AARM</name>
+                    <file> 92</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\hw_rtc.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 161</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 50</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Middlewares\DW\LoraMessage.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 90</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 69</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 216 226 228 227 229 223 215 218 222 217 220 224 221 237 260 247 251 242 241 267 265 255 261 243 252 244 246 245 238 256 239 257 259 248 253 249 254 266 250 258 240 262 263 264 209 202 185 188 183 184 193 186 187 182 210 189 225 219 201 192 190 191 194 195 196 211 181 203 200 197 198 204 199 206 207 208</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\bsp.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 173</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 52</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\message.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 86</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 102</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 214 217 220 226 228 227 229 223 224 221 237 260 247 251 242 241 267 265 255 261 243 252 244 246 245 238 256 215 239 257 259 248 253 249 254 266 250 258 240 262 263 264 209 202 185 188 183 184 193 186 187 182 210 189 225 219 201 192 190 191 194 195 196 211 181 203 200 197 198 204 199 218 222 216 206 207 208</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\mlm32l0xx_it.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 64</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 38</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\timeServer.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 172</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 110</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_core.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 177</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 112</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Middlewares\DW\PayloadMessage.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 176</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 48</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 216 226 228 227 229 223 215 218 222 225 219 217 220 224 221 237 260 247 251 242 241 267 265 255 261 243 252 244 246 245 238 256 239 257 259 248 253 249 254 266 250 258 240 262 263 264 209 202 185 188 183 184 193 186 187 182 210 189 201 192 190 191 194 195 196 211 181 203 200 197 198 204 199 205 206 207 208 230</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\vcom.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 71</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 40</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\utilities.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 94</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 109</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\mlm32l0xx_hw.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 68</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 101</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\Middlewares\Third_Party\LoRaWAN\Utilities\trace.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 93</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 67</file>
+                </tool>
+            </outputs>
+        </file>
     </configuration>
 </project>

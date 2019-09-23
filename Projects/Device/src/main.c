@@ -222,7 +222,6 @@ void payloadDataCallback(uint8_t rxSrcID, payloadPacket_TypeDef* payloadData)
 	
     switch(payloadData->data[0])
     {
-			
         case 0x01: //USBPRINT
             strcpy(stringPrint, (char *)&payloadData->data[1]);
             USBPRINT("Received string from master: %s \r\n",stringPrint);
@@ -234,7 +233,7 @@ void payloadDataCallback(uint8_t rxSrcID, payloadPacket_TypeDef* payloadData)
         case 0x03: //LED1 OFF Control
             HAL_GPIO_WritePin(LED1_GPIO_PORT, LED1_PIN, GPIO_PIN_SET);
             break;
-				case 0x10:
+        case 0x10:
             USBPRINT("Received User Data : %x\r\n",payloadData->data[1]);
             break;
         default:

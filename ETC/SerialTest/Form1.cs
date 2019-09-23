@@ -360,7 +360,12 @@ namespace SerialTest
                 
                 , 0xB1, 10, (byte)Convert.ToInt32(textBox_destData.Text, 16), textbox_data[2], textbox_data[1], textbox_data[0], (byte)Packet.CHECKSUM, (byte)Packet.ETX };
                 */
-            byte[] txbuff = { 0xA5, 0xA5, (byte)Convert.ToInt32(textBox_destID.Text, 16), 0, 0, 2, 0x10, 0x20, (byte)Packet.CHECKSUM, (byte)Packet.ETX };
+
+            byte[] textbox_data = BitConverter.GetBytes(Convert.ToInt32(textBox_destData.Text, 16));
+            
+            byte[] txbuff = { 0xA5, 0xA5, (byte)Convert.ToInt32(textBox_destID.Text, 16), 0, 0, 4, (byte)Packet.DATA, (byte)Packet.DATA, (byte)Packet.DATA, (byte)Packet.DATA, (byte)Packet.CHECKSUM, (byte)Packet.ETX };
+
+            Array.Copy(textbox_data, 0, txbuff, 6, 4);
             sendFrame(txbuff);
         }
     }
