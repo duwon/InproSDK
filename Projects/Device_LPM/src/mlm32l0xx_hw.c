@@ -39,9 +39,7 @@ Maintainer: Miguel Luis and Gregory Cristian
 #include "debug.h"
 #include "vcom.h"
 #include "bsp.h"
-#include "usb_device.h"
 #include "timeServer.h"
-#include "usbd_cdc.h"
 
 /*!
  *  \brief Unique Devices IDs register set ( STM32L0xxx )
@@ -92,25 +90,8 @@ static bool AdcInitialized = false;
 /*!
  * Flag to indicate if the MCU is Initialized
  */
-#define USB_BUFFER_MAX_SIZE         250
-
 static bool McuInitialized = false;
 
-
-
-typedef struct {
-  uint8_t in;
-  uint8_t out;
-  uint8_t count;
-  uint8_t data[USB_BUFFER_MAX_SIZE];
-  uint8_t ch;
-}usbFIFO_Typedef;
-
-usbFIFO_Typedef usbSentBuffer;
-
-//uint8_t usbSentBuffer[USB_BUFFER_MAX_SIZE+1];
-static  TimerEvent_t timerUSBSend; /* Tx Timers objects */
-static void OnUSBSendEvent( void* context );
 /**
   * @brief This function initializes the hardware
   * @param None
@@ -126,24 +107,18 @@ void HW_Init( void )
 #endif
 
     HW_AdcInit( );
-
     Radio.IoInit( );
-    
     HW_SPI_Init( );
-
     HW_RTC_Init( );
-    
     TraceInit( );
-    MX_USB_DEVICE_Init();
-      
+
+#ifdef _DEBUG_
     BSP_LED_Init( LED1 );
     BSP_LED_Init( LED2 );
+#endif
     BSP_PB_Init(BUTTON_KEY,BUTTON_MODE_GPIO);
     BSP_sensor_Init();
 
-
-    TimerInit(&timerUSBSend, OnUSBSendEvent);
-    
     McuInitialized = true;
   }
 }
@@ -559,98 +534,6 @@ void LPM_EnterSleepMode( void)
     HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
 }
 
-
-static ErrorStatus putByteToBuffer(volatile usbFIFO_Typedef *buffer, uint8_t ch)
-{
-    if(buffer->count==USB_BUFFER_MAX_SIZE)  /* 데이터가 버퍼에 가득 찼으면 ERROR 리턴 */
-    {
-        return ERROR;
-    }
-    
-    buffer->data[buffer->in++]=ch;        /* 버퍼에 1Byte 저장 */
-    buffer->count++;                      /* 버퍼에 저장된 갯수 1 증가 */
-    if(buffer->in==USB_BUFFER_MAX_SIZE)     /* 시작 인덱스가 버퍼의 끝이면 */
-    {
-        buffer->in=0;                     /* 시작 인덱스를 0부터 다시 시작 */
-    }
-    return SUCCESS;
-}
-
-static ErrorStatus getByteFromBuffer(volatile usbFIFO_Typedef *buffer, uint8_t *ch)
-{
-    if(buffer->count==0)                  /* 버퍼에 데이터가 없으면 ERROR 리턴 */
-    {
-        return ERROR;
-    }
-    
-    *ch=buffer->data[buffer->out];        /* 버퍼에서 1Byte 읽음 */
-    buffer->data[buffer->out++] = 0;
-    buffer->count--;                      /* 버퍼에 저장된 데이터 갯수 1 감소 */
-    if(buffer->out==USB_BUFFER_MAX_SIZE)    /* 끝 인덱스가 버퍼의 끝이면 */
-    {
-        buffer->out=0;                    /* 끝 인덱스를 0부터 다시 시작 */
-    }
-    return SUCCESS;
-}
-
-extern uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
-/**
-  * @brief  USB_Send
-  *         Data to send over USB IN endpoint are sent over CDC interface
-  *         through this function.
-  * @param  *strFormat: string of data to be sent
-  * @retval None
-  */    
-void USB_Send( const char *strFormat, ...)
-{
-  char buf[USB_BUFFER_MAX_SIZE];
-  va_list vaArgs;
-  va_start( vaArgs, strFormat);
-  uint16_t bufSize=vsnprintf(buf,USB_BUFFER_MAX_SIZE,strFormat, vaArgs);
-  va_end(vaArgs);
-
-  //memcpy(usbSentBuffer, (uint8_t *)buf, bufSize);
-  //usbSentBuffer[USB_BUFFER_MAX_SIZE] = bufSize;
-    
-  if(CDC_Transmit_FS((uint8_t *)buf, bufSize) != USBD_OK)
-  {
-    for(int i=0; i<bufSize; i++)
-    {
-      putByteToBuffer(&usbSentBuffer, buf[i]);
-    }
-    TimerSetValue(&timerUSBSend, 10);
-    TimerStart(&timerUSBSend);   
-  }
-
-}
-
-static void OnUSBSendEvent( void* context )
-{
-  uint32_t primask_bit = __get_PRIMASK();
-  __disable_irq();
-  uint8_t bufSize = usbSentBuffer.count;
-  uint8_t buf[USB_BUFFER_MAX_SIZE];
-
-  for(int i=0; i<bufSize; i++)
-  {
-    getByteFromBuffer(&usbSentBuffer, &buf[i]);
-  }
-
-  if(CDC_Transmit_FS(buf, bufSize) != USBD_OK)
-  {
-    for(int i=0; i<bufSize; i++)
-    {
-      putByteToBuffer(&usbSentBuffer, buf[i]);
-    }
-    TimerSetValue(&timerUSBSend, 10);
-    TimerStart(&timerUSBSend);   
-  }
-  else
-  {
-      TimerStop(&timerUSBSend);
-  }
-  __set_PRIMASK(primask_bit);
-}
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

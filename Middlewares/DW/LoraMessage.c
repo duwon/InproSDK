@@ -72,10 +72,10 @@ void sendMessage(uint8_t _destID, uint8_t *Data, uint8_t Size)
     Radio_Tx(txMessageBuff, txMessageSize);
 
 #ifdef _DEBUG_    
-    USBPRINT("%d [TX] ", HW_RTC_GetTimerValue());
+    PRINTF("%d [TX] ", HW_RTC_GetTimerValue());
     for (int i = 0; i < txMessageSize; i++)
-        USBPRINT("%X ", txMessageBuff[i]);
-    USBPRINT("\r\n");
+        PRINTF("%X ", txMessageBuff[i]);
+    PRINTF("\r\n");
 #endif
 }
 
@@ -154,17 +154,17 @@ messageError_TypeDef putMessageBuffer(volatile messageFIFO_TypeDef *buffer, uint
         
 
     #ifdef _DEBUG_
-        USBPRINT("%d [RX] ", HW_RTC_GetTimerValue());
+        PRINTF("%d [RX] ", HW_RTC_GetTimerValue());
         for(int i=0; i<size; i++)
-           USBPRINT("%x ", data[i]);
-        USBPRINT("      %d byte  SRC: %X, payloadSize: %X, RSSI: %ddBm, SNR: %d    \r\n",size,buffer->buff[buffer->in-1].src,buffer->buff[buffer->in-1].payloadSize,buffer->buff[buffer->in-1].rssi,buffer->buff[buffer->in-1].snr);
+           PRINTF("%x ", data[i]);
+        PRINTF("      %d byte  SRC: %X, payloadSize: %X, RSSI: %ddBm, SNR: %d    \r\n",size,buffer->buff[buffer->in-1].src,buffer->buff[buffer->in-1].payloadSize,buffer->buff[buffer->in-1].rssi,buffer->buff[buffer->in-1].snr);
     #endif
 #else
     #ifdef _DEBUG_
-        USBPRINT("%d [RX] ", HW_RTC_GetTimerValue());
+        PRINTF("%d [RX] ", HW_RTC_GetTimerValue());
         for(int i=0; i<size; i++)
-            USBPRINT("%X ", data[i]);
-        USBPRINT("SRC: %X\r\n",buffer->buff[buffer->in-1].src);
+            PRINTF("%X ", data[i]);
+        PRINTF("SRC: %X\r\n",buffer->buff[buffer->in-1].src);
     #endif
 #endif
 

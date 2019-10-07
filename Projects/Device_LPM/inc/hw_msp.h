@@ -184,17 +184,6 @@ void SystemClock_Config( void );
   */
 void HW_GpioInit(void);
 
-
-/**
-  * @brief  USB_Send
-  *         Data to send over USB IN endpoint are sent over CDC interface
-  *         through this function.
-  * @param  *strFormat: string of data to be sent
-  * @retval None
-  */
-  
-void USB_Send( const char *strFormat, ...);
-
 #ifdef __cplusplus
 }
 #endif

@@ -51,9 +51,6 @@ extern "C" {
 #include "debug.h"
 
 
-#define USBPRINT(...)   USB_Send(__VA_ARGS__)
-//#define USBPRINT(...)
-    
 #ifdef __cplusplus
 }
 #endif

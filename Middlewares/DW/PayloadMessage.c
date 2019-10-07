@@ -88,7 +88,7 @@ void pyaloadTimerInit(void)
     TimerSetValue( &timerBooting, timerBootingInterval);
     TimerStart(&timerBooting );
 
-    USBPRINT("Booting Time : %d ms \r\n",timerBootingInterval);
+    PRINTF("Booting Time : %d ms \r\n",timerBootingInterval);
 #endif
 
 }
@@ -162,7 +162,7 @@ void procPayloadData(void)
             }
             break;
         case MTYPE_ACK:
-            USBPRINT("ACK OK\r\n");
+            PRINTF("ACK OK\r\n");
             break;
         default:
             break;

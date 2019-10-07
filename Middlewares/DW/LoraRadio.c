@@ -38,7 +38,9 @@ void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
     }
     else if (errorCode != PUT_SUCCESS)
     {
-        USBPRINT("Message Error Code %d\r\n", errorCode);
+#ifdef _DEBUG_
+        PRINTF("Message Error Code %d\r\n", errorCode);
+#endif
     }
     LoraState = RX_DONE;
 }
