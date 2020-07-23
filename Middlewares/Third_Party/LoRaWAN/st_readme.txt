@@ -1,7 +1,7 @@
   @verbatim
   ******************************************************************************
   *  
-  *           Portions COPYRIGHT 2018 STMicroelectronics                       
+  *           Portions COPYRIGHT 2019 STMicroelectronics                       
   *
   * @file    st_readme.txt 
   * @author  MCD Application Team
@@ -11,7 +11,7 @@
   *          to UM2073 "STM32 LORA01 software expansion for STM32Cube "  
   ******************************************************************************
   *
-  * Copyright (c) 2018 STMicroelectronics. All rights reserved.
+  * Copyright (c) 2019 STMicroelectronics. All rights reserved.
   *
   * This software component is licensed by ST under Ultimate Liberty license
   * SLA0044, the "License"; You may not use this file except in compliance with
@@ -20,6 +20,14 @@
   *
   ******************************************************************************
   @endverbatim
+
+### V1.3.1/04-November-2019 ###
+===============================
+   +  Implements LoRa Mac 4.4.2 from Semtech/StackForce
+   
+   + Reorganizes files previously in Core folder:
+     - lora.c/h and lora-test.c/h are now in Patterns/Basic
+     - Semtech's LmHandler and its packages (used for Fuota example) are in Patterns/Advanced
 
 ### V1.3.0/10-July-2019 ###
 ===============================

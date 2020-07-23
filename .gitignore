@@ -65,3 +65,4 @@ ETC/.vs/SerialTest/v15/Server/
 Projects/**/EWARM/Debug/
 Projects/**/EWARM/Lora/
 Projects/**/EWARM/settings/
+Middlewares/Third_Party/LoRaWAN1/

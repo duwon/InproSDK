@@ -56,8 +56,6 @@
 
 #define HEX16(X)  X[0],X[1], X[2],X[3], X[4],X[5], X[6],X[7],X[8],X[9], X[10],X[11], X[12],X[13], X[14],X[15]
 #define HEX8(X)   X[0],X[1], X[2],X[3], X[4],X[5], X[6],X[7]
-static uint8_t DevEui[] = LORAWAN_DEVICE_EUI;
-static uint8_t JoinEui[] = LORAWAN_JOIN_EUI;
 static uint8_t AppKey[] = LORAWAN_APP_KEY;
 static uint8_t NwkKey[] = LORAWAN_NWK_KEY;
 
@@ -437,6 +435,9 @@ static void MlmeIndication( MlmeIndication_t *MlmeIndication )
  */
 void LORA_Init (LoRaMainCallback_t *callbacks, LoRaParam_t* LoRaParam )
 {
+  uint8_t devEui[] = LORAWAN_DEVICE_EUI;
+  uint8_t joinEui[] = LORAWAN_JOIN_EUI;
+  
   /* init the Tx Duty Cycle*/
   LoRaParamInit = LoRaParam;
   
@@ -444,14 +445,14 @@ void LORA_Init (LoRaMainCallback_t *callbacks, LoRaParam_t* LoRaParam )
   LoRaMainCallbacks = callbacks;
   
 #if (STATIC_DEVICE_EUI != 1)
-  LoRaMainCallbacks->BoardGetUniqueId( DevEui );  
+  LoRaMainCallbacks->BoardGetUniqueId( devEui );  
 #endif
   
 #if( OVER_THE_AIR_ACTIVATION != 0 )
 
   PPRINTF( "OTAA\n\r"); 
-  PPRINTF( "DevEui= %02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X\n\r", HEX8(DevEui));
-  PPRINTF( "AppEui= %02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X\n\r", HEX8(JoinEui));
+  PPRINTF( "DevEui= %02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X\n\r", HEX8(devEui));
+  PPRINTF( "AppEui= %02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X\n\r", HEX8(joinEui));
   PPRINTF( "AppKey= %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\n\r", HEX16(AppKey));
 #else
 
@@ -462,7 +463,7 @@ void LORA_Init (LoRaMainCallback_t *callbacks, LoRaParam_t* LoRaParam )
   DevAddr = randr( 0, 0x01FFFFFF );
 #endif
   PPRINTF( "ABP\n\r"); 
-  PPRINTF( "DevEui= %02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X\n\r", HEX8(DevEui));
+  PPRINTF( "DevEui= %02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X\n\r", HEX8(devEui));
   PPRINTF( "DevAdd=  %08X\n\r", DevAddr) ;
   PPRINTF( "NwkSKey= %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\n\r", HEX16(NwkSEncKey));
   PPRINTF( "AppSKey= %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\n\r", HEX16(AppSKey));
@@ -519,6 +520,14 @@ void LORA_Init (LoRaMainCallback_t *callbacks, LoRaParam_t* LoRaParam )
 #endif
 #endif
 
+  mibReq.Type = MIB_DEV_EUI;
+  mibReq.Param.DevEui = devEui;
+  LoRaMacMibSetRequestConfirm( &mibReq );
+  
+  mibReq.Type = MIB_JOIN_EUI;
+  mibReq.Param.JoinEui = joinEui;
+  LoRaMacMibSetRequestConfirm( &mibReq );
+
   mibReq.Type = MIB_ADR;
   mibReq.Param.AdrEnable = LoRaParamInit->AdrEnable;
   LoRaMacMibSetRequestConfirm( &mibReq );
@@ -557,8 +566,6 @@ void LORA_Join( void)
     MlmeReq_t mlmeReq;
   
     mlmeReq.Type = MLME_JOIN;
-    mlmeReq.Req.Join.DevEui = DevEui;
-    mlmeReq.Req.Join.JoinEui = JoinEui;
     mlmeReq.Req.Join.Datarate = LoRaParamInit->TxDatarate;
   
     JoinParameters = mlmeReq.Req.Join;

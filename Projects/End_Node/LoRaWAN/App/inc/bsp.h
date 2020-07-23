@@ -1,4 +1,4 @@
- /*
+/*
  / _____)             _              | |
 ( (____  _____ ____ _| |_ _____  ____| |__
  \____ \| ___ |    (_   _) ___ |/ ___)  _ \
@@ -6,16 +6,17 @@
 (______/|_____)_|_|_| \__)_____)\____)_| |_|
     (C)2013 Semtech
 
-Description: LoRaMac classA device implementation
+Description: contains all hardware driver
 
 License: Revised BSD License, see LICENSE.TXT file include in the project
 
-Maintainer: Miguel Luis, Gregory Cristian and Wael Guibene
+Maintainer: Miguel Luis and Gregory Cristian
 */
-/******************************************************************************
-  * @file    lora_mac_version.h
+/**
+  ******************************************************************************
+  * @file    bsp.h
   * @author  MCD Application Team
-  * @brief   defines the lora mac version
+  * @brief   contains all hardware driver
   ******************************************************************************
   * @attention
   *
@@ -31,31 +32,51 @@ Maintainer: Miguel Luis, Gregory Cristian and Wael Guibene
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-
-#ifndef __LORA_MAC_VERSION_H__
-#define __LORA_MAC_VERSION_H__
+#ifndef __BSP_H__
+#define __BSP_H__
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
-   
 /* Includes ------------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-
-/*the 4 MSBs define the version based on Github version         */
-/*https://github.com/Lora-net/LoRaMac-node/wiki/LoRaMAC-node-Wiki*/
-/* based on version 4.4.2-rc.6 from develop branch and later commits*/
-#define LORA_MAC_VERSION   (uint32_t) 0x44260000
-   
 /* Exported types ------------------------------------------------------------*/
+
+typedef struct
+{
+  float pressure;    /* in mbar */
+  float temperature; /* in °C   */
+  float humidity;    /* in %    */
+  int32_t latitude;
+  int32_t longitude ;
+  int16_t  altitudeGps;       /* in m */
+  int16_t altitudeBar ;       /* in m * 10 */
+  /**more may be added*/
+} sensor_t;
+
+
+/* Exported constants --------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
 /* Exported macros -----------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */ 
+/* Exported functions ------------------------------------------------------- */
+/**
+ * @brief  initialises the sensor
+ *
+ * @note
+ * @retval None
+ */
+void  BSP_sensor_Init(void);
+
+/**
+ * @brief  sensor  read.
+ *
+ * @note none
+ * @retval sensor_data
+ */
+void BSP_sensor_Read(sensor_t *sensor_data);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*__LORA_MAC_VERSION_H__*/
-
+#endif /* __BSP_H__ */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

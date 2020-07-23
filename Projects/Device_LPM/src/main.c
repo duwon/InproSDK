@@ -19,11 +19,14 @@ static  TimerEvent_t timerTx; /* Tx Timers objects */
 static void OnTxEvent( void* context );
 static void procLoraStage(void);
 static void mainTimerInit(void);
+static void enterLowPowerMode(void);
 
 int main(void)
 {
     HAL_Init();
     SystemClock_Config();
+	
+		//LPM_Test();
     HW_Init();
 
     LPM_SetOffMode(LPM_APPLI_Id, LPM_Disable); /*Disbale Stand-by mode*/
@@ -33,6 +36,9 @@ int main(void)
 
     mainTimerInit();
 
+		BSP_LED_On(LED1);
+		HAL_Delay(2000);
+    enterLowPowerMode();
     while (1)
     {
         procLoraStage();
@@ -83,7 +89,7 @@ static void procLoraStage(void)
 static void mainTimerInit(void)
 {
 #ifdef _DEBUG_
-    PRINTF("\r\n\r\n\r\nSTART Device..... UID : 0x");
+    PRINTF("\r\n\r\n\r\nSTART Device....... UID : 0x");
     for (int i = 0; i < 8; i++)
         PRINTF("%X ", UID[i]);
     PRINTF("   Device ID : 0x%x\r\n\r\n", DEVICE_ID);
@@ -93,6 +99,82 @@ static void mainTimerInit(void)
     TimerInit(&timerTx, OnTxEvent);
     TimerSetValue(&timerTx, TX_INTERVAL_TIME);
     TimerStart(&timerTx);
+}
+
+#define RTC_ASYNCH_PREDIV    0x7C
+#define RTC_SYNCH_PREDIV     0x0127
+void enterLowPowerMode(void)
+{
+	RTC_HandleTypeDef RTCHandle;
+  /* Configure the system Power */
+	/* Enable Power Control clock */
+	__HAL_RCC_PWR_CLK_ENABLE();
+
+	HAL_PWREx_EnableUltraLowPower();
+
+	/* Enable the fast wake up from Ultra low power mode */
+	HAL_PWREx_EnableFastWakeUp();
+
+	/* Configure RTC */
+	RTCHandle.Instance = RTC;
+	/* Set the RTC time base to 1s */
+	/* Configure RTC prescaler and RTC data registers as follow:
+		- Hour Format = Format 24
+		- Asynch Prediv = Value according to source clock
+		- Synch Prediv = Value according to source clock
+		- OutPut = Output Disable
+		- OutPutPolarity = High Polarity
+		- OutPutType = Open Drain */
+	RTCHandle.Init.HourFormat = RTC_HOURFORMAT_24;
+	RTCHandle.Init.AsynchPrediv = RTC_ASYNCH_PREDIV;
+	RTCHandle.Init.SynchPrediv = RTC_SYNCH_PREDIV;
+	RTCHandle.Init.OutPut = RTC_OUTPUT_DISABLE;
+	RTCHandle.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+	RTCHandle.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+	if(HAL_RTC_Init(&RTCHandle) != HAL_OK)
+	{
+		/* Initialization Error */
+		Error_Handler(); 
+	}
+
+  /* Check and handle if the system was resumed from StandBy mode */ 
+  if(__HAL_PWR_GET_FLAG(PWR_FLAG_SB) != RESET)
+  {
+    /* Clear Standby flag */
+    __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB); 
+  }
+  
+  /* The Following Wakeup sequence is highly recommended prior to each Standby mode entry
+    mainly  when using more than one wakeup source this is to not miss any wakeup event.
+    - Disable all used wakeup sources,
+    - Clear all related wakeup flags, 
+    - Re-enable all used wakeup sources,
+    - Enter the Standby mode.
+  */
+  /* Disable all used wakeup sources*/
+  HAL_RTCEx_DeactivateWakeUpTimer(&RTCHandle);
+  
+  /* Re-enable all used wakeup sources*/
+  /* ## Setting the Wake up time ############################################*/
+  /*  RTC Wakeup Interrupt Generation:
+    Wakeup Time Base = (RTC_WAKEUPCLOCK_RTCCLK_DIV /(LSI))
+    Wakeup Time = Wakeup Time Base * WakeUpCounter 
+      = (RTC_WAKEUPCLOCK_RTCCLK_DIV /(LSI)) * WakeUpCounter
+      ==> WakeUpCounter = Wakeup Time / Wakeup Time Base
+  
+    To configure the wake up timer to 4s the WakeUpCounter is set to 0x1FFF:
+    RTC_WAKEUPCLOCK_RTCCLK_DIV = RTCCLK_Div16 = 16 
+    Wakeup Time Base = 16 /(~39.000KHz) = ~0,410 ms
+    Wakeup Time = ~4s = 0,410ms  * WakeUpCounter
+      ==> WakeUpCounter = ~4s/0,410ms = 9750 = 0x2616 */
+	uint32_t WakeUpCounter = TX_INTERVAL_TIME * 24.39;
+  HAL_RTCEx_SetWakeUpTimer_IT(&RTCHandle, WakeUpCounter, RTC_WAKEUPCLOCK_RTCCLK_DIV16);
+  
+  /* Clear all related wakeup flags */
+  __HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
+  
+  /* Enter the Standby mode */
+  HAL_PWR_EnterSTANDBYMode();
 }
 
 static void OnTxEvent(void *context)
@@ -149,3 +231,6 @@ void payloadDataCallback(uint8_t rxSrcID, payloadPacket_TypeDef *payloadData)
         break;
     }
 }
+
+
+

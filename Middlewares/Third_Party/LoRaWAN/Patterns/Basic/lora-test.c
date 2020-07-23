@@ -45,7 +45,7 @@ typedef struct ComplianceTest_s
     uint8_t State;
     LoraConfirm_t IsTxConfirmed;
     uint8_t DataBufferSize;
-    uint8_t DataBuffer[64];
+    uint8_t DataBuffer[242];
     uint16_t DownLinkCounter;
     bool LinkCheck;
     uint8_t DemodMargin;
@@ -287,9 +287,19 @@ void certif_rx( McpsIndication_t *mcpsIndication, MlmeReqJoin_t* JoinParameters)
           }
           certifParam.State = 1;
           break;
+		}
+		
+        case 8: // Send DeviceTimeReq
+        {
+          MlmeReq_t mlmeReq;
+
+          mlmeReq.Type = MLME_DEVICE_TIME;
+
+          LoRaMacMlmeRequest( &mlmeReq );
+          break;
         }
 #ifdef LORAMAC_CLASSB_ENABLED
-        case 8: // Switch end device Class
+        case 9: // Switch end device Class
         {
           MibRequestConfirm_t mibReq;
 
@@ -299,7 +309,7 @@ void certif_rx( McpsIndication_t *mcpsIndication, MlmeReqJoin_t* JoinParameters)
           LoRaMacMibSetRequestConfirm( &mibReq );
           break;
         }
-        case 9: // Send PingSlotInfoReq
+        case 10: // Send PingSlotInfoReq
         {
           MlmeReq_t mlmeReq;
 
